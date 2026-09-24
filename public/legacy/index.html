@@ -339,4 +339,4 @@ window.addEventListener('load', function () {
 })();
 </script><script>
 (function(){const U='https://lptzejmdtsmnlxfodihr.supabase.co/rest/v1',K='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwdHplam1kdHNtbmx4Zm9kaWhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNjc2MjQsImV4cCI6MjA5OTY0MzYyNH0.VMG5eWULDR34Q5vHoMXCJgiJuhozKxIO0SVT3C3ncvc',H={apikey:K,Authorization:'Bearer '+K};window.addEventListener('load',async()=>{try{const cs=await(await fetch(U+'/campaigns?active=eq.true&select=*',{headers:H})).json(),nav=document.querySelector('.nav');if(!nav)return;cs.forEach(c=>{if(![...nav.querySelectorAll('b')].some(b=>b.textContent.trim()===c.name)){const b=document.createElement('b');b.textContent=c.name;b.className='cloudCampaign';nav.appendChild(b);}})}catch(_){}})})();
-</script>
+</script><script>(function(){const V='bubbleUpTestDataReset_v1';if(localStorage.getItem(V))return;Object.keys(localStorage).filter(k=>k.startsWith('bubbleUp')).forEach(k=>localStorage.removeItem(k));localStorage.setItem(V,'1');})();</script>

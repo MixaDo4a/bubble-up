@@ -300,4 +300,4 @@ window.addEventListener('load',function(){
  save.addEventListener('click',()=>setTimeout(()=>{let a=read();if(edit>=0){a[edit]={...a[edit],name:name.value.trim(),period:period.value,description:desc.value};edit=-1;save.textContent='Создать акцию';}else if(name.value.trim()){a.push({name:name.value.trim(),period:period.value,description:desc.value,active:true});}localStorage.setItem('bubbleUpCampaigns',JSON.stringify(a));render()},80),true);
  rows.addEventListener('click',e=>{const ed=e.target.closest('[data-edit]'),del=e.target.closest('[data-del]');let a=read();if(ed){const x=a[+ed.dataset.edit];edit=+ed.dataset.edit;name.value=x.name||'';period.value=x.period||'';desc.value=x.description||'';save.textContent='Сохранить изменения';name.focus()}if(del){a.splice(+del.dataset.del,1);localStorage.setItem('bubbleUpCampaigns',JSON.stringify(a));render()}});
 });
-</script>
+</script><script>(function(){const V='bubbleUpTestDataReset_v1';if(localStorage.getItem(V))return;Object.keys(localStorage).filter(k=>k.startsWith('bubbleUp')).forEach(k=>localStorage.removeItem(k));localStorage.setItem(V,'1');})();</script>
