@@ -33,6 +33,11 @@ export async function getPublishedCatalog(): Promise<CatalogCampaign[]> {
 }
 
 export async function getCoffeeShops(): Promise<CoffeeShop[]> {
- const c=config(); if(!c) return []; const h={apikey:c.key,Authorization:Bearer }; const r=await fetch(${c.url}/rest/v1/coffee_shops?active=eq.true&order=sort_order.asc,{headers:h,cache:'no-store'}); if(!r.ok) throw new Error(Coffee shops request failed: ); return await r.json() as CoffeeShop[];
+  const c = config();
+  if (!c) return [];
+  const headers = { apikey: c.key, Authorization: `Bearer ${c.key}` };
+  const response = await fetch(`${c.url}/rest/v1/coffee_shops?active=eq.true&order=sort_order.asc`, { headers, cache: "no-store" });
+  if (!response.ok) throw new Error(`Coffee shops request failed: ${response.status}`);
+  return await response.json() as CoffeeShop[];
 }
 
