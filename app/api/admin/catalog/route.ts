@@ -13,7 +13,7 @@ function authorized(request: Request) {
   return !token || request.headers.get("x-admin-token") === token;
 }
 
-const allowed = new Set(["campaigns", "menus", "products", "addon_groups", "addons", "product_addon_groups"]);
+const allowed = new Set(["campaigns", "menus", "products", "addon_groups", "addons", "product_addon_groups", "coffee_shops"]);
 
 export async function GET(request: Request) {
   const c = cfg();
@@ -55,3 +55,4 @@ export async function DELETE(request: Request) {
   const response = await fetch(`${c.url}/rest/v1/${body.entity}?id=eq.${encodeURIComponent(body.id)}`, { method: "DELETE", headers: { apikey: c.key, Authorization: `Bearer ${c.key}`, Prefer: "return=minimal" } });
   return new NextResponse(null, { status: response.status });
 }
+
