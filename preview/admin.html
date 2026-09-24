@@ -422,3 +422,10 @@ window.addEventListener('load',()=>{let n=0;const purge=async()=>{try{const cs=a
   window.addEventListener('load',()=>{check();setInterval(check,500);new MutationObserver(()=>clean()).observe(document.body,{childList:true,subtree:true});});
 })();
 </script>
+<script>
+/* Legacy import blocker: the old constructor must not recreate deleted browser-local catalog rows. */
+(function(){
+ const raw=localStorage.getItem.bind(localStorage), blocked=/^bubbleUp(Campaign|Menus_|Products_|CoffeeShops)/;
+ try{localStorage.getItem=function(k){return blocked.test(String(k))?null:raw(k)};localStorage.removeItem.bind(localStorage);Object.keys(localStorage).filter(k=>blocked.test(k)).forEach(k=>localStorage.removeItem(k));}catch(_){}
+})();
+</script>
