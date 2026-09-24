@@ -14,3 +14,4 @@ export async function GET(request: Request) {\n  if (new URL(request.url).search
   } catch (e) { await sql.end({timeout:1}); return NextResponse.json({error:String(e)},{status:500}); }
 }
 
+
