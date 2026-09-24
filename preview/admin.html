@@ -271,14 +271,6 @@ window.addEventListener('load',function(){
 });
 </script><script>\n(function(){\n function go(){\n  const box=document.querySelector('.builderProducts'),c=box&&box.querySelector('.productCampaign'),m=box&&box.querySelector('.productMenu'); if(!c||!m)return;\n  if(![...c.options].some(o=>o.value==='Мишанины дни')){const o=document.createElement('option');o.value='Мишанины дни';o.textContent='Мишанины дни';c.appendChild(o);}\n  if(c.value==='Мишанины дни'){let a=[];try{a=JSON.parse(localStorage.getItem('bubbleUpMenus_Мишанины дни')||'[]')}catch(_){} if(a.length && !a.some(n=>[...m.options].some(o=>o.value===n))){const cur=m.value;m.innerHTML='';a.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;m.appendChild(o)});if(a.includes(cur))m.value=cur;}}\n }\n window.addEventListener('load',()=>{go();let n=0;const t=setInterval(()=>{go();if(++n>30)clearInterval(t)},200)});\n})();\n</script>
 <script>
-(function(){
- const U='https://lptzejmdtsmnlxfodihr.supabase.co/rest/v1',K='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwdHplam1kdHNtbmx4Zm9kaWhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNjc2MjQsImV4cCI6MjA5OTY0MzYyNH0.VMG5eWULDR34Q5vHoMXCJgiJuhozKxIO0SVT3C3ncvc'.replace(/\s/g,''),H={apikey:K,Authorization:'Bearer '+K,'Content-Type':'application/json'};
- const read=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k)||'null');return Array.isArray(v)?v:(d||[])}catch(_){return d||[]}};
- const get=async p=>{const r=await fetch(U+p,{headers:H});return r.ok?r.json():[]};
- async function cleanup(){try{const cs=await get('/campaigns?select=*');for(const c of cs){const hasM=localStorage.getItem('bubbleUpMenus_'+c.name)!==null,lm=read('bubbleUpMenus_'+c.name,[]),rm=await get('/menus?campaign_id=eq.'+c.id+'&select=*');for(const m of rm){if(hasM&&!lm.includes(m.name)){await fetch(U+'/menus?id=eq.'+m.id,{method:'DELETE',headers:H});continue}const lp=read('bubbleUpProducts_'+c.name+'_'+m.name,[]),rp=await get('/products?menu_id=eq.'+m.id+'&select=*');for(const p of rp)if(!lp.some(x=>x.name===p.name))await fetch(U+'/products?id=eq.'+p.id,{method:'DELETE',headers:H});}}}catch(_){}}
- window.addEventListener('load',()=>{let last='';const tick=async()=>{const s=Object.keys(localStorage).filter(k=>k.startsWith('bubbleUpMenus_')||k.startsWith('bubbleUpProducts_')).map(k=>k+localStorage.getItem(k)).join('|');if(s!==last){last=s;await cleanup()}};tick();setInterval(tick,1000)});
-})();
-</script><script>
 window.addEventListener('load',function(){
  const panel=document.querySelector('.campaignCreatePanel'); if(!panel||panel.querySelector('.campaignList'))return;
  const box=document.createElement('div');box.className='campaignList';box.style.cssText='margin-top:24px;border-top:1px solid #e5e7eb;padding-top:18px';
