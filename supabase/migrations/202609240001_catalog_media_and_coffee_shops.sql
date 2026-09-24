@@ -18,4 +18,5 @@ create table if not exists public.coffee_shops (
 );
 
 alter table public.coffee_shops enable row level security;
-create policy if not exists "coffee shops are publicly readable" on public.coffee_shops for select to anon, authenticated using (active = true);
+do $$ begin\n  if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'coffee_shops' and policyname = 'coffee shops are publicly readable') then\n    create policy "coffee shops are publicly readable" on public.coffee_shops for select to anon, authenticated using (active = true);\n  end if;\nend $$;
+
