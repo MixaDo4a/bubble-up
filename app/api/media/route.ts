@@ -11,7 +11,7 @@ export async function POST(request: Request) {
   const file = form.get("file");
   if (!(file instanceof File)) return NextResponse.json({ error: "file is required" }, { status: 400 });
   if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) return NextResponse.json({ error: "Only images and videos are supported" }, { status: 415 });
-  const max = Number(process.env.MEDIA_MAX_BYTES || 250 * 1024 * 1024);
+  const max = Number(process.env.MEDIA_MAX_BYTES || 50 * 1024 * 1024);
   if (file.size > max) return NextResponse.json({ error: "File is too large" }, { status: 413 });
   const safe = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
   const path = `${crypto.randomUUID()}-${safe}`;
