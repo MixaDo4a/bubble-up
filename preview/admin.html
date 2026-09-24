@@ -272,7 +272,7 @@ window.addEventListener('load',function(){
 </script><script>\n(function(){\n function go(){\n  const box=document.querySelector('.builderProducts'),c=box&&box.querySelector('.productCampaign'),m=box&&box.querySelector('.productMenu'); if(!c||!m)return;\n  if(![...c.options].some(o=>o.value==='Мишанины дни')){const o=document.createElement('option');o.value='Мишанины дни';o.textContent='Мишанины дни';c.appendChild(o);}\n  if(c.value==='Мишанины дни'){let a=[];try{a=JSON.parse(localStorage.getItem('bubbleUpMenus_Мишанины дни')||'[]')}catch(_){} if(a.length && !a.some(n=>[...m.options].some(o=>o.value===n))){const cur=m.value;m.innerHTML='';a.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;m.appendChild(o)});if(a.includes(cur))m.value=cur;}}\n }\n window.addEventListener('load',()=>{go();let n=0;const t=setInterval(()=>{go();if(++n>30)clearInterval(t)},200)});\n})();\n</script>
 <script>
 (function(){
- const URL='https://lptzejmdtsmnlxfodihr.supabase.co/rest/v1', KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwdHplam1kdHNtbmx4Zm9kaWhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNjc2MjQsImV4cCI6MjA5NjQzNjYyNH0.VMG5eWULDR34Q5vHoMXCJgiJuhozKxIO0SVT3C3ncvc';
+ const URL='https://lptzejmdtsmnlxfodihr.supabase.co/rest/v1', KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwdHplam1kdHNtbmx4Zm9kaWhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNjc2MjQsImV4cCI6MjA5OTY0MzYyNH0.VMG5eWULDR34Q5vHoMXCJgiJuhozKxIO0SVT3C3ncvc';
  const h={apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json',Prefer:'return=representation'};
  const get=async path=>{const r=await fetch(URL+path,{headers:h});return r.ok?r.json():[]};
  const post=async(path,data)=>{const r=await fetch(URL+path,{method:'POST',headers:h,body:JSON.stringify(data)});return r.ok?(await r.json())[0]:null};
@@ -282,7 +282,7 @@ window.addEventListener('load',function(){
 })();
 </script><script>
 (function(){
- const U='https://lptzejmdtsmnlxfodihr.supabase.co/rest/v1',K='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzIiwicmVmIjoibHB0amVqbWR0c21ubHhmb2Rp aHIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzgwNjc2MjQsImV4cCI6MjA5NjQzNjYyNH0.VMG5eWULDR34Q5vHoMXCJgiJuhozKxIO0SVT3C3ncvc'.replace(/\s/g,''),H={apikey:K,Authorization:'Bearer '+K,'Content-Type':'application/json'};
+ const U='https://lptzejmdtsmnlxfodihr.supabase.co/rest/v1',K='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwdHplam1kdHNtbmx4Zm9kaWhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNjc2MjQsImV4cCI6MjA5OTY0MzYyNH0.VMG5eWULDR34Q5vHoMXCJgiJuhozKxIO0SVT3C3ncvc'.replace(/\s/g,''),H={apikey:K,Authorization:'Bearer '+K,'Content-Type':'application/json'};
  const read=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k)||'null');return Array.isArray(v)?v:(d||[])}catch(_){return d||[]}};
  const get=async p=>{const r=await fetch(U+p,{headers:H});return r.ok?r.json():[]};
  async function cleanup(){try{const cs=await get('/campaigns?select=*');for(const c of cs){const hasM=localStorage.getItem('bubbleUpMenus_'+c.name)!==null,lm=read('bubbleUpMenus_'+c.name,[]),rm=await get('/menus?campaign_id=eq.'+c.id+'&select=*');for(const m of rm){if(hasM&&!lm.includes(m.name)){await fetch(U+'/menus?id=eq.'+m.id,{method:'DELETE',headers:H});continue}const lp=read('bubbleUpProducts_'+c.name+'_'+m.name,[]),rp=await get('/products?menu_id=eq.'+m.id+'&select=*');for(const p of rp)if(!lp.some(x=>x.name===p.name))await fetch(U+'/products?id=eq.'+p.id,{method:'DELETE',headers:H});}}}catch(_){}}

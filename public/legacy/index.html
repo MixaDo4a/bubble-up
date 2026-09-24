@@ -333,7 +333,7 @@ window.addEventListener('load', function () {
 </script>
 <script>
 (function(){
- const U='https://lptzejmdtsmnlxfodihr.supabase.co/rest/v1',K='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzIiwicmVmIjoibHB0amVqbWR0c21ubHhmb2Rp aHIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzgwNjc2MjQsImV4cCI6MjA5NjQzNjYyNH0.VMG5eWULDR34Q5vHoMXCJgiJuhozKxIO0SVT3C3ncvc'.replace(/\s/g,''),H={apikey:K,Authorization:'Bearer '+K};
+ const U='https://lptzejmdtsmnlxfodihr.supabase.co/rest/v1',K='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwdHplam1kdHNtbmx4Zm9kaWhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNjc2MjQsImV4cCI6MjA5OTY0MzYyNH0.VMG5eWULDR34Q5vHoMXCJgiJuhozKxIO0SVT3C3ncvc'.replace(/\s/g,''),H={apikey:K,Authorization:'Bearer '+K};
  async function pull(){try{const cs=await (await fetch(U+'/campaigns?active=eq.true&select=*',{headers:H})).json();for(const c of cs){const ms=await (await fetch(U+'/menus?campaign_id=eq.'+c.id+'&order=sort_order.asc&select=*',{headers:H})).json();localStorage.setItem('bubbleUpMenus_'+c.name,JSON.stringify(ms.map(m=>m.name)));for(const m of ms){const ps=await (await fetch(U+'/products?menu_id=eq.'+m.id+'&order=sort_order.asc&select=*',{headers:H})).json();if(ps.length)localStorage.setItem('bubbleUpProducts_'+c.name+'_'+m.name,JSON.stringify(ps.map(p=>({name:p.name,price:p.price,badge:p.description,details:p.details,main:p.is_main}))) );}}}catch(_){}}
  window.addEventListener('load',()=>pull().then(()=>window.dispatchEvent(new Event('bubbleUpCloudReady'))));
 })();
