@@ -395,3 +395,6 @@ window.addEventListener('load',()=>setTimeout(async()=>{
 },4800));
 </script>
 
+<script>
+window.addEventListener('load',()=>{let n=0;const t=setInterval(()=>{const nav=document.querySelector('.nav');if(nav){const keep=[...nav.querySelectorAll('b')].filter(b=>b.dataset.id);if(keep.length)nav.innerHTML='',}if(++n>12)clearInterval(t)},700)});
+</script>
