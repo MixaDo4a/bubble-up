@@ -272,16 +272,6 @@ window.addEventListener('load',function(){
 </script><script>\n(function(){\n function go(){\n  const box=document.querySelector('.builderProducts'),c=box&&box.querySelector('.productCampaign'),m=box&&box.querySelector('.productMenu'); if(!c||!m)return;\n  if(![...c.options].some(o=>o.value==='Мишанины дни')){const o=document.createElement('option');o.value='Мишанины дни';o.textContent='Мишанины дни';c.appendChild(o);}\n  if(c.value==='Мишанины дни'){let a=[];try{a=JSON.parse(localStorage.getItem('bubbleUpMenus_Мишанины дни')||'[]')}catch(_){} if(a.length && !a.some(n=>[...m.options].some(o=>o.value===n))){const cur=m.value;m.innerHTML='';a.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;m.appendChild(o)});if(a.includes(cur))m.value=cur;}}\n }\n window.addEventListener('load',()=>{go();let n=0;const t=setInterval(()=>{go();if(++n>30)clearInterval(t)},200)});\n})();\n</script>
 <script>
 (function(){
- const URL='https://lptzejmdtsmnlxfodihr.supabase.co/rest/v1', KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwdHplam1kdHNtbmx4Zm9kaWhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNjc2MjQsImV4cCI6MjA5OTY0MzYyNH0.VMG5eWULDR34Q5vHoMXCJgiJuhozKxIO0SVT3C3ncvc';
- const h={apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json',Prefer:'return=representation'};
- const get=async path=>{const r=await fetch(URL+path,{headers:h});return r.ok?r.json():[]};
- const post=async(path,data)=>{const r=await fetch(URL+path,{method:'POST',headers:h,body:JSON.stringify(data)});return r.ok?(await r.json())[0]:null};
- const read=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k)||'null');return Array.isArray(v)?v:(d||[])}catch(_){return d||[]}};
- async function sync(){const names=[]; try{const ca=JSON.parse(localStorage.getItem('bubbleUpCampaigns')||'[]'); ca.forEach(x=>x&&x.name&&names.push(x.name)); const cc=JSON.parse(localStorage.getItem('bubbleUpCampaign_custom')||'null'); if(cc&&cc.name)names.push(cc.name); Object.keys(localStorage).filter(k=>k.startsWith('bubbleUpCampaign_')).forEach(k=>{try{const x=JSON.parse(localStorage.getItem(k)||'null');if(x&&x.name)names.push(x.name)}catch(_){}})}catch(_){}for(const k of Object.keys(localStorage).filter(k=>k.startsWith('bubbleUpMenus_')))names.push(k.slice(15));for(const name of [...new Set(names)]){let cr=(await get('/campaigns?name=eq.'+encodeURIComponent(name)+'&select=*'))[0];if(!cr)cr=await post('/campaigns',{name,description:'',active:true});if(!cr)continue;const menus=read('bubbleUpMenus_'+name,[]);for(let mi=0;mi<menus.length;mi++){const mn=menus[mi];let mr=(await get('/menus?campaign_id=eq.'+cr.id+'&name=eq.'+encodeURIComponent(mn)+'&select=*'))[0];if(!mr)mr=await post('/menus',{campaign_id:cr.id,name:mn,sort_order:mi});if(!mr)continue;const products=read('bubbleUpProducts_'+name+'_'+mn,[]);for(let pi=0;pi<products.length;pi++){const x=products[pi],pq='/products?menu_id=eq.'+mr.id+'&name=eq.'+encodeURIComponent(x.name||'')+'&select=*';if(!(await get(pq))[0])await post('/products',{menu_id:mr.id,name:x.name||'',price:Number(x.price)||0,description:x.badge||'',details:x.details||'',is_main:!!x.main,image_url:x.image_url||x.imageUrl||null,video_url:x.video_url||x.videoUrl||null,sort_order:pi});}}}}
- window.addEventListener('load',()=>setTimeout(sync,500));
-})();
-</script><script>
-(function(){
  const U='https://lptzejmdtsmnlxfodihr.supabase.co/rest/v1',K='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwdHplam1kdHNtbmx4Zm9kaWhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNjc2MjQsImV4cCI6MjA5OTY0MzYyNH0.VMG5eWULDR34Q5vHoMXCJgiJuhozKxIO0SVT3C3ncvc'.replace(/\s/g,''),H={apikey:K,Authorization:'Bearer '+K,'Content-Type':'application/json'};
  const read=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k)||'null');return Array.isArray(v)?v:(d||[])}catch(_){return d||[]}};
  const get=async p=>{const r=await fetch(U+p,{headers:H});return r.ok?r.json():[]};
@@ -428,4 +418,15 @@ window.addEventListener('load',()=>{let n=0;const purge=async()=>{try{const cs=a
  const raw=localStorage.getItem.bind(localStorage), blocked=/^bubbleUp(Campaign|Menus_|Products_|CoffeeShops)/;
  try{localStorage.getItem=function(k){return blocked.test(String(k))?null:raw(k)};localStorage.removeItem.bind(localStorage);Object.keys(localStorage).filter(k=>blocked.test(k)).forEach(k=>localStorage.removeItem(k));}catch(_){}
 })();
+</script>
+
+<script>
+/* Cloud campaign list: refresh visible rows from Supabase after every create. */
+window.addEventListener('load',()=>setTimeout(()=>{
+ const panel=document.querySelector('.campaignCreatePanel'); if(!panel)return;
+ const list=panel.querySelector('.campaignList')||(()=>{const x=document.createElement('div');x.className='campaignList';x.style='margin-top:24px;border-top:1px solid #e5e7eb;padding-top:18px';x.innerHTML='<h3>Созданные акции</h3><div class="campaignRows"></div>';panel.appendChild(x);return x})();
+ const rows=list.querySelector('.campaignRows');
+ const render=async()=>{try{const r=await fetch('/api/admin/catalog?entity=campaigns&_='+Date.now(),{cache:'no-store'}),a=await r.json();rows.innerHTML=a.map(x=>'<div style="padding:8px 0;border-bottom:1px solid #eef0f4"><strong>'+String(x.name||'').replace(/[<>]/g,'')+'</strong></div>').join('')||'<small>Акций пока нет</small>'}catch(_){} };
+ render(); document.querySelector('.campaignCreateSave')?.addEventListener('click',()=>setTimeout(render,1200),true);
+},1500));
 </script>
