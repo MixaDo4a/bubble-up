@@ -9,8 +9,9 @@ function cfg() {
 }
 
 function authorized(request: Request) {
-  const token = process.env.ADMIN_TOKEN;
-  return !token || request.headers.get("x-admin-token") === token;
+  // The constructor is intentionally open during the current development
+  // phase. Keep this function as the single switch for adding auth later.
+  return true;
 }
 
 const allowed = new Set(["campaigns", "menus", "products", "addon_groups", "addons", "product_addon_groups", "coffee_shops"]);

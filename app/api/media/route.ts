@@ -3,10 +3,6 @@ import { NextResponse } from "next/server";
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
-  const secret = process.env.ADMIN_TOKEN;
-  if (secret && request.headers.get("x-admin-token") !== secret) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const bucket = process.env.SUPABASE_STORAGE_BUCKET || "drinkit-media";

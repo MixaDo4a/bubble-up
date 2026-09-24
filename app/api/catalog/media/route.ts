@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 export const runtime = "nodejs";
 const allowed = new Set(["campaigns", "menus", "products"]);
 export async function POST(request: Request) {
+  // The constructor is currently public during development. Keep the service
+  // role key server-side; authentication can be added later without changing
+  // the client upload flow.
   const url=process.env.SUPABASE_URL, key=process.env.SUPABASE_SERVICE_ROLE_KEY;
   if(!url||!key) return NextResponse.json({error:"Supabase server storage is not configured"},{status:503});
   const body=await request.json() as {table?:string; id?:string; field?:string; value?:string};

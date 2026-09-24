@@ -341,3 +341,40 @@ window.addEventListener('load',()=>{const box=document.querySelector('.builderMe
 window.addEventListener('load',()=>{const p=document.querySelector('.campaignCreatePanel'),b=p?.querySelector('.campaignCreateSave');if(!p||!b)return;b.addEventListener('click',async()=>{const name=p.querySelector('.campaignCreateName')?.value.trim();if(!name)return;const K='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwdHplam1kdHNtbHhmb2RpaHIiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc4NDA2NzYyNCwiZXhwIjoyMDk2NjM2NjI0fQ.VMG5eWULDR34Q5vHoMXCJgiJuhozKxIO0SVT3C3ncvc';try{const U='https://lptzejmdtsmnlxfodihr.supabase.co/rest/v1/campaigns',H={apikey:K,Authorization:'Bearer '+K,'Content-Type':'application/json',Prefer:'return=representation'},q=await fetch(U+'?name=eq.'+encodeURIComponent(name)+'&select=id',{headers:H}),a=await q.json();if(!a.length)await fetch(U,{method:'POST',headers:H,body:JSON.stringify({name,description:p.querySelector('.campaignCreateDesc')?.value||'',active:true})})}catch(_){}} ,true)});
 </script>
 
+<script>
+/* Supabase media bridge: uploads files from the constructor to shared storage. */
+(function(){
+  const state={campaignFiles:new Map(), productFiles:{main:null,detail:null}};
+  const json=async (url,opts)=>{const r=await fetch(url,opts); if(!r.ok) throw new Error(await r.text()); return r.json().catch(()=>({}));};
+  const upload=async file=>{const fd=new FormData();fd.append('file',file,file.name);const out=await json('/api/media',{method:'POST',body:fd});return out.url;};
+  const patch=async(table,id,field,value)=>json('/api/catalog/media',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({table,id,field,value})});
+  const find=async(entity)=>json('/api/admin/catalog?entity='+encodeURIComponent(entity));
+  const remember=()=>{
+    const cp=document.querySelector('.campaignCreatePanel');
+    cp?.querySelector('.campaignCreateImage')?.addEventListener('change',e=>{const f=e.target.files?.[0];if(f)state.campaignFiles.set('image',f)});
+    cp?.querySelector('.campaignCreateVideo')?.addEventListener('change',e=>{const f=e.target.files?.[0];if(f)state.campaignFiles.set('video',f)});
+    const pp=document.querySelector('.productAddPanel');
+    pp?.querySelector('.newProdMedia')?.addEventListener('change',e=>{const f=e.target.files?.[0];if(f)state.productFiles.main=f});
+    pp?.querySelector('.newProdDetailMedia')?.addEventListener('change',e=>{const f=e.target.files?.[0];if(f)state.productFiles.detail=f});
+  };
+  const campaignSync=async()=>{
+    const cp=document.querySelector('.campaignCreatePanel'); const name=cp?.querySelector('.campaignCreateName')?.value.trim();
+    if(!name||!state.campaignFiles.size)return;
+    try{await new Promise(r=>setTimeout(r,1200));const rows=await find('campaigns');const row=[...rows].reverse().find(x=>x.name===name);if(!row)return;
+      for(const [kind,file] of state.campaignFiles){const url=await upload(file);await patch('campaigns',row.id,kind==='video'?'video_url':'image_url',url)}
+      state.campaignFiles.clear();
+    }catch(e){console.error('campaign media sync',e)}
+  };
+  const productSync=async()=>{
+    const box=document.querySelector('.builderProducts'),pp=document.querySelector('.productAddPanel');if(!box||!pp)return;
+    const name=pp.querySelector('.newProdName')?.value.trim(); const campaign=box.querySelector('.productCampaign')?.value; const menu=box.querySelector('.productMenu')?.value;
+    const files={...state.productFiles}; if(!name||(!files.main&&!files.detail))return;
+    try{await new Promise(r=>setTimeout(r,1300));const [cs,ms]=await Promise.all([find('campaigns'),find('menus')]);const cr=[...cs].reverse().find(x=>x.name===campaign);const mr=[...ms].reverse().find(x=>x.name===menu&&(!cr||x.campaign_id===cr.id));if(!mr)return;const ps=await find('products');const row=[...ps].reverse().find(x=>x.name===name&&x.menu_id===mr.id);if(!row)return;
+      if(files.main){const url=await upload(files.main);await patch('products',row.id,files.main.type.startsWith('video/')?'video_url':'image_url',url)}
+      if(files.detail){const url=await upload(files.detail);await patch('products',row.id,files.detail.type.startsWith('video/')?'video_url':'image_url',url)}
+      state.productFiles={main:null,detail:null};
+    }catch(e){console.error('product media sync',e)}
+  };
+  window.addEventListener('load',()=>{remember();document.querySelector('.campaignCreateSave')?.addEventListener('click',()=>setTimeout(campaignSync,200));document.querySelector('.newProdAdd')?.addEventListener('click',()=>setTimeout(productSync,250));});
+})();
+</script>
