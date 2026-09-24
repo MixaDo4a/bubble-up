@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import postgres from "postgres";
 export const runtime = "nodejs";
-export async function POST(request: Request) {
+export async function GET(request: Request) {\n  if (new URL(request.url).searchParams.get("confirm") !== "bubble-up-schema-2026") return NextResponse.json({error:"Not found"},{status:404});\n  return POST(request);\n}\n\nexport async function POST(request: Request) {
   if (process.env.ADMIN_TOKEN && request.headers.get("x-admin-token") !== process.env.ADMIN_TOKEN) return NextResponse.json({error:"Unauthorized"},{status:401});
   const url=process.env.DATABASE_URL; if(!url) return NextResponse.json({error:"DATABASE_URL is not configured"},{status:503});
   const sql=postgres(url,{max:1});
@@ -13,3 +13,4 @@ export async function POST(request: Request) {
     await sql.end({timeout:1}); return NextResponse.json({ok:true});
   } catch (e) { await sql.end({timeout:1}); return NextResponse.json({error:String(e)},{status:500}); }
 }
+
