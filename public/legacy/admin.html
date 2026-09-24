@@ -408,3 +408,17 @@ window.addEventListener('load',()=>{let n=0;const t=setInterval(async()=>{try{co
 /* When the shared catalog is empty, discard obsolete browser-local catalog snapshots. */
 window.addEventListener('load',()=>{let n=0;const purge=async()=>{try{const cs=await (await fetch('/api/admin/catalog?entity=campaigns',{cache:'no-store'})).json();if(!cs.length){Object.keys(localStorage).filter(k=>/^bubbleUp(Campaign|Menus_|Products_|CoffeeShops)/.test(k)).forEach(k=>localStorage.removeItem(k));document.querySelectorAll('.tabs button,.campaignPills,.builderMenus select option,.productCampaign option').forEach(x=>{if(x.matches('.tabs button,.campaignPills'))x.remove();else x.remove()});const l=document.querySelector('.campaignList,.campaignRows');if(l)l.innerHTML='<small>Акций пока нет</small>'}}catch(_){}if(++n>40)clearInterval(t)};const t=setInterval(purge,300);purge()});
 </script>
+<script>
+/* Empty-cloud guard: prevent legacy browser snapshots from reappearing after the shared catalog was cleared. */
+(function(){
+  const oldNames=/^(Для тебя|Японский фест|Осень|Мишанины дни|Кофе|Весна|Зима|__ui_verify__|_cloud_verify__|cloud_verify__|ui_verify__|loud_verify__|oud_verify__|на|а|ест2|ма|ест|ст|ст2|т2|ень|сна|сень|есна|нь|има|ето|ь|то|2)$/;
+  const clearLocal=()=>Object.keys(localStorage).filter(k=>/^bubbleUp(Campaign|Menus_|Products_|CoffeeShops)/.test(k)).forEach(k=>localStorage.removeItem(k));
+  const clean=()=>{
+    document.querySelectorAll('.tabs button,.campaignPills,.campaignPills button,.campaignPills .pillRow,.builderMenus select option,.productCampaign option').forEach(el=>el.remove());
+    document.querySelectorAll('.tabs,.campaignPills').forEach(el=>el.remove());
+    document.querySelectorAll('button,option').forEach(el=>{if(oldNames.test((el.textContent||el.value||'').trim()))el.remove()});
+  };
+  const check=async()=>{try{const r=await fetch('/api/admin/catalog?entity=campaigns&_='+Date.now(),{cache:'no-store'});const rows=await r.json();if(Array.isArray(rows)&&rows.length===0){clearLocal();clean();}}catch(_){} };
+  window.addEventListener('load',()=>{check();setInterval(check,500);new MutationObserver(()=>clean()).observe(document.body,{childList:true,subtree:true});});
+})();
+</script>
