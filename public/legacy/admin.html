@@ -404,3 +404,7 @@ window.addEventListener('load',()=>setTimeout(async()=>{try{const cs=await (awai
 /* Last-pass cleanup: legacy timers must not reintroduce browser-local catalog rows. */
 window.addEventListener('load',()=>{let n=0;const t=setInterval(async()=>{try{const cs=await (await fetch('/api/admin/catalog?entity=campaigns',{cache:'no-store'})).json(),names=cs.map(x=>x.name).filter(Boolean),tabs=document.querySelector('.tabs');if(tabs){tabs.innerHTML='';names.forEach(name=>{const b=document.createElement('button');b.textContent=name;tabs.appendChild(b)})}document.querySelectorAll('.campaignPills').forEach(x=>x.remove());}catch(_){}if(++n>12)clearInterval(t)},700)});
 </script>
+<script>
+/* When the shared catalog is empty, discard obsolete browser-local catalog snapshots. */
+window.addEventListener('load',()=>{let n=0;const purge=async()=>{try{const cs=await (await fetch('/api/admin/catalog?entity=campaigns',{cache:'no-store'})).json();if(!cs.length){Object.keys(localStorage).filter(k=>/^bubbleUp(Campaign|Menus_|Products_|CoffeeShops)/.test(k)).forEach(k=>localStorage.removeItem(k));document.querySelectorAll('.tabs button,.campaignPills,.builderMenus select option,.productCampaign option').forEach(x=>{if(x.matches('.tabs button,.campaignPills'))x.remove();else x.remove()});const l=document.querySelector('.campaignList,.campaignRows');if(l)l.innerHTML='<small>Акций пока нет</small>'}}catch(_){}if(++n>40)clearInterval(t)};const t=setInterval(purge,300);purge()});
+</script>
