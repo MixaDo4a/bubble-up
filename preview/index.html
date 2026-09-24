@@ -397,3 +397,11 @@ window.addEventListener('load',()=>setTimeout(async()=>{
 
 <script>window.addEventListener(\x27load\x27,()=>{let n=0;const t=setInterval(()=>{if(++n>12)clearInterval(t)},700)});</script>
 
+<script>
+/* Empty-cloud guard for the public app: never show legacy browser catalog after the shared catalog is cleared. */
+(function(){
+ const clear=()=>{document.querySelector('.nav')?.replaceChildren();document.querySelector('.sub')?.replaceChildren();document.querySelectorAll('.section').forEach(s=>s.replaceChildren());const h=document.querySelector('.heroText');if(h)h.innerHTML='<b>Выберите акцию</b><span style="display:block;font-size:15px;opacity:.85">Подробнее появится после выбора акции</span>';const loc=document.querySelector('.loc');if(loc)loc.innerHTML='<span class="moon">☾</span><div><b>Выберите кофейню</b><small style="display:block;color:#fffc">Адрес и время работы появятся после выбора</small></div>';};
+ const check=async()=>{try{const r=await fetch('/api/catalog?_='+Date.now(),{cache:'no-store'}),d=await r.json();if(Array.isArray(d.campaigns)&&d.campaigns.length===0)clear()}catch(_){} };
+ window.addEventListener('load',()=>{check();setInterval(check,700)});
+})();
+</script>
