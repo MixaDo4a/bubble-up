@@ -4,7 +4,7 @@ export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   const url = process.env.SUPABASE_URL || "https://lptzejmdtsmnlxfodihr.supabase.co";
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_PUBLISHABLE_KEY;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwdHplam1kdHNtbmx4Zm9kaWhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwNjc2MjQsImV4cCI6MjA5OTY0MzYyNH0.VMG5eWULDR34Q5vHoMXCJgiJuhozKxIO0SVT3C3ncvc";
   const bucket = process.env.SUPABASE_STORAGE_BUCKET || "drinkit-media";
   if (!url || !key) return NextResponse.json({ error: "Storage is not configured" }, { status: 503 });
   const form = await request.formData();
@@ -20,3 +20,5 @@ export async function POST(request: Request) {
   if (!uploaded.ok) return NextResponse.json({ error: `Storage upload failed: ${uploaded.status}` }, { status: 502 });
   return NextResponse.json({ path, url: `${url.replace(/\/$/, "")}/storage/v1/object/public/${encodeURIComponent(bucket)}/${encodeURIComponent(path)}`, type: file.type, size: file.size });
 }
+
+
