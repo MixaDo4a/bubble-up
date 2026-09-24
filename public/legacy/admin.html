@@ -328,7 +328,7 @@ window.addEventListener('load',()=>{const p=document.querySelector('.campaignCre
 (function(){
   const state={campaignFiles:new Map(), productFiles:{main:null,detail:null}};
   const json=async (url,opts)=>{const r=await fetch(url,opts); if(!r.ok) throw new Error(await r.text()); return r.json().catch(()=>({}));};
-  const upload=async file=>{const fd=new FormData();fd.append('file',file,file.name);const out=await json('/api/media',{method:'POST',body:fd});return out.url;};
+  const upload=async file=>{const sign=await json('/api/media/sign',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:file.name,type:file.type})});const u='https://lptzejmdtsmnlxfodihr.supabase.co/storage/v1/object/upload/sign/drinkit-media/'+encodeURIComponent(sign.path)+'?token='+encodeURIComponent(sign.token);const r=await fetch(u,{method:'PUT',headers:{'Content-Type':file.type||'application/octet-stream'},body:file});if(!r.ok)throw new Error(await r.text());return sign.url;};
   const patch=async(table,id,field,value)=>json('/api/catalog/media',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({table,id,field,value})});
   const find=async(entity)=>json('/api/admin/catalog?entity='+encodeURIComponent(entity));
   const remember=()=>{
@@ -365,7 +365,7 @@ window.addEventListener('load',()=>{const p=document.querySelector('.campaignCre
 window.addEventListener('load',()=>setTimeout(()=>{
  const api=(method,body)=>fetch('/api/admin/catalog',{method,headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(r=>{if(!r.ok)throw new Error('catalog '+r.status);return r.json()});
  const get=e=>fetch('/api/admin/catalog?entity='+e,{cache:'no-store'}).then(r=>r.json());
- const media=f=>{const x=new FormData();x.append('file',f,f.name);return fetch('/api/media',{method:'POST',body:x}).then(r=>r.json()).then(x=>x.url)};
+ const media=f=>fetch('/api/media/sign',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:f.name,type:f.type})}).then(r=>r.json()).then(async s=>{if(!s.token)throw Error(s.error||'Не удалось получить ссылку загрузки');const u='https://lptzejmdtsmnlxfodihr.supabase.co/storage/v1/object/upload/sign/drinkit-media/'+encodeURIComponent(s.path)+'?token='+encodeURIComponent(s.token);const r=await fetch(u,{method:'PUT',headers:{'Content-Type':f.type||'application/octet-stream'},body:f});if(!r.ok)throw Error(await r.text());return s.url});
  const saveMedia=(table,id,field,url)=>fetch('/api/catalog/media',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({table,id,field,value:url})});
  let campaigns=[],menus=[],pending={campaignImage:null,campaignVideo:null,productMain:null,productDetail:null};
  document.querySelector('.campaignCreateImage')?.addEventListener('change',e=>pending.campaignImage=e.target.files?.[0]||null);
