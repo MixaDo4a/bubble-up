@@ -30,3 +30,6 @@ export type CatalogCampaign = {
   active: boolean;
   menus: CatalogMenu[];
 };
+
+export type CoffeeShop = { id:string; name:string; city:string; address:string; hours:string; active:boolean; sort_order:number };
+
