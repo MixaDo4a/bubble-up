@@ -430,3 +430,11 @@ window.addEventListener('load',()=>setTimeout(()=>{
  render(); document.querySelector('.campaignCreateSave')?.addEventListener('click',()=>setTimeout(render,1200),true);
 },1500));
 </script>
+<script>
+/* Single campaign-save handler: remove legacy listeners that caused duplicate/failed requests. */
+window.addEventListener('load',()=>setTimeout(()=>{
+ const old=document.querySelector('.campaignCreateSave'); if(!old)return;
+ const btn=old.cloneNode(true); old.replaceWith(btn);
+ btn.addEventListener('click',async e=>{e.preventDefault();e.stopPropagation();const p=document.querySelector('.campaignCreatePanel'),name=p?.querySelector('.campaignCreateName')?.value.trim();const status=p?.querySelector('.campaignCreateStatus');if(!name){if(status)status.textContent='Введите название акции';return}try{const r=await fetch('/api/admin/catalog',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({entity:'campaigns',data:{name,description:p.querySelector('.campaignCreateDesc')?.value||'',active:true}})});const text=await r.text();let data;try{data=JSON.parse(text)}catch(_){throw new Error(text||('HTTP '+r.status))}if(!r.ok)throw new Error(data?.error||('HTTP '+r.status));if(status)status.textContent='Сохранено в Supabase';const list=p.querySelector('.campaignRows');if(list){const q=await fetch('/api/admin/catalog?entity=campaigns&_='+Date.now(),{cache:'no-store'});const rows=await q.json();list.innerHTML=rows.map(x=>'<div style="padding:8px 0;border-bottom:1px solid #eef0f4"><strong>'+String(x.name||'').replace(/[<>]/g,'')+'</strong></div>').join('')||'<small>Акций пока нет</small>'}p.querySelector('.campaignCreateName').value='';}catch(err){if(status)status.textContent='Ошибка сохранения: '+err.message}},false);
+},2500));
+</script>
