@@ -315,3 +315,19 @@ window.addEventListener('load',()=>{
 <script>
 window.addEventListener('load',()=>setTimeout(()=>{document.querySelectorAll('.customHero').forEach(h=>{const u=(h.style.backgroundImage.match(/url\("?([^"\)]+)\)?/)||[])[1];if(!u||!u.startsWith('blob:'))return;const v=document.createElement('video');v.src=u;v.autoplay=true;v.loop=true;v.muted=true;v.playsInline=true;v.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover';v.onerror=()=>v.remove();h.style.backgroundImage='none';h.prepend(v)})},1200));
 </script>
+<script>
+window.addEventListener('load', function () {
+  const nav=document.querySelector('.nav'); if(!nav)return;
+  const read=(k,f)=>{try{const v=JSON.parse(localStorage.getItem(k)||'null');return Array.isArray(v)?v:(f||[])}catch(_){return f||[]}};
+  const esc=v=>String(v??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+  function render(camp){
+    let menus=read('bubbleUpMenus_'+camp,[]);
+    if(!menus.length){ const pref='bubbleUpProducts_'+camp+'_'; menus=Object.keys(localStorage).filter(k=>k.startsWith(pref)).map(k=>k.slice(pref.length)).filter(Boolean); }
+    if(!menus.length)return false;
+    const sections=[...document.querySelectorAll('.section')];
+    menus.forEach((m,i)=>{ const a=read('bubbleUpProducts_'+camp+'_'+m,[]),s=sections[i]; if(!s)return; const main=a.find(x=>x.main),rest=a.filter(x=>!x.main); let html='<h2>'+esc(m)+'</h2>'; if(main)html+='<div class="customHero"><div><b>'+esc(main.name)+'</b><br><small>'+esc(main.price||'')+' ₽</small></div></div>'; html+='<div class="customGrid">'+rest.map(x=>'<div class="tile"><div class="pic">🥤</div><b>'+esc(x.name)+'</b><small>'+esc(x.badge||'')+'</small><strong>'+esc(x.price||'')+' ₽　›</strong></div>').join('')+'</div>'; s.innerHTML=html; });
+    document.querySelectorAll('.sub span').forEach((x,i)=>x.textContent=menus[i]||''); return true;
+  }
+  nav.addEventListener('click', function(e){ const b=e.target.closest('b'); if(!b)return; const camp=(b.textContent||'').trim(); if(camp==='Мишанины дни' || localStorage.getItem('bubbleUpMenus_'+camp) || Object.keys(localStorage).some(k=>k.startsWith('bubbleUpProducts_'+camp+'_'))) setTimeout(()=>render(camp),0); }, true);
+});
+</script>
