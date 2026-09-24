@@ -288,4 +288,16 @@ window.addEventListener('load',function(){
  async function cleanup(){try{const cs=await get('/campaigns?select=*');for(const c of cs){const hasM=localStorage.getItem('bubbleUpMenus_'+c.name)!==null,lm=read('bubbleUpMenus_'+c.name,[]),rm=await get('/menus?campaign_id=eq.'+c.id+'&select=*');for(const m of rm){if(hasM&&!lm.includes(m.name)){await fetch(U+'/menus?id=eq.'+m.id,{method:'DELETE',headers:H});continue}const lp=read('bubbleUpProducts_'+c.name+'_'+m.name,[]),rp=await get('/products?menu_id=eq.'+m.id+'&select=*');for(const p of rp)if(!lp.some(x=>x.name===p.name))await fetch(U+'/products?id=eq.'+p.id,{method:'DELETE',headers:H});}}}catch(_){}}
  window.addEventListener('load',()=>{let last='';const tick=async()=>{const s=Object.keys(localStorage).filter(k=>k.startsWith('bubbleUpMenus_')||k.startsWith('bubbleUpProducts_')).map(k=>k+localStorage.getItem(k)).join('|');if(s!==last){last=s;await cleanup()}};tick();setInterval(tick,1000)});
 })();
+</script><script>
+window.addEventListener('load',function(){
+ const panel=document.querySelector('.campaignCreatePanel'); if(!panel||panel.querySelector('.campaignList'))return;
+ const box=document.createElement('div');box.className='campaignList';box.style.cssText='margin-top:24px;border-top:1px solid #e5e7eb;padding-top:18px';
+ box.innerHTML='<h3 style="margin:0 0 12px">Созданные акции</h3><div class="campaignRows"></div>';panel.appendChild(box);
+ const rows=box.querySelector('.campaignRows'),name=panel.querySelector('.campaignCreateName'),period=panel.querySelector('.campaignCreatePeriod'),desc=panel.querySelector('.campaignCreateDesc'),save=panel.querySelector('.campaignCreateSave');
+ const read=()=>{try{return JSON.parse(localStorage.getItem('bubbleUpCampaigns')||'[]')}catch(_){return[]}};
+ const render=()=>{const a=read();rows.innerHTML=a.map((x,i)=>'<div class="campaignRow" style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #eef0f4"><div style="flex:1"><strong>'+String(x.name||'').replace(/[<>]/g,'')+'</strong><small style="display:block;color:#7b8494">'+String(x.period||'Без периода')+'</small></div><button type="button" data-edit="'+i+'" style="border:1px solid #cbd5e1;border-radius:8px;background:#fff;padding:7px 10px">Редактировать</button><button type="button" data-del="'+i+'" style="border:1px solid #fecaca;border-radius:8px;background:#fff;color:#b42318;padding:7px 10px">Удалить</button></div>').join('')||'<small style="color:#7b8494">Акций пока нет</small>'};
+ let edit=-1; render();
+ save.addEventListener('click',()=>setTimeout(()=>{let a=read();if(edit>=0){a[edit]={...a[edit],name:name.value.trim(),period:period.value,description:desc.value};edit=-1;save.textContent='Создать акцию';}else if(name.value.trim()){a.push({name:name.value.trim(),period:period.value,description:desc.value,active:true});}localStorage.setItem('bubbleUpCampaigns',JSON.stringify(a));render()},80),true);
+ rows.addEventListener('click',e=>{const ed=e.target.closest('[data-edit]'),del=e.target.closest('[data-del]');let a=read();if(ed){const x=a[+ed.dataset.edit];edit=+ed.dataset.edit;name.value=x.name||'';period.value=x.period||'';desc.value=x.description||'';save.textContent='Сохранить изменения';name.focus()}if(del){a.splice(+del.dataset.del,1);localStorage.setItem('bubbleUpCampaigns',JSON.stringify(a));render()}});
+});
 </script>
