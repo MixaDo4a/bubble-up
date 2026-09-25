@@ -349,7 +349,7 @@ window.addEventListener('load', function () {
       document.body.classList.remove('catalog-loading');
     }catch(e){document.body.classList.remove('catalog-loading');const app=document.querySelector('.app');if(app&&!app.querySelector('.cloud-error')){const x=document.createElement('div');x.className='cloud-error';x.textContent='Не удалось загрузить каталог. Проверьте соединение и обновите страницу.';app.appendChild(x)}console.error('cloud catalog',e)}
   }
-  window.addEventListener('load',()=>setTimeout(render,0));
+  window.addEventListener('load',()=>setTimeout(render,2200));
 })();
 </script>
 <script>
