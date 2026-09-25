@@ -483,7 +483,7 @@ window.addEventListener('load',()=>setTimeout(()=>setInterval(async()=>{
  try{const cs=await (await fetch('/api/admin/catalog?entity=campaigns&_='+Date.now(),{cache:'no-store'})).json();if(!Array.isArray(cs))return;const names=cs.map(x=>x.name).filter(Boolean);
    document.querySelectorAll('.cloudCampaignSelect,.builderMenus select:not(.productMenu),.productCampaign').forEach(s=>{const cur=s.value;s.innerHTML=names.map(n=>'<option value="'+String(n).replace(/"/g,'&quot;')+'">'+String(n).replace(/[<>]/g,'')+'</option>').join('');if(names.includes(cur))s.value=cur;});
  }catch(_){ }
-},1000),2500));
+},1000),2500);
 </script>
 <script id="final-cloud-constructor">
 (function(){
