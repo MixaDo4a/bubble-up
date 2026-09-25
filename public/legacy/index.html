@@ -82,3 +82,4 @@ window.addEventListener('load',()=>setTimeout(async()=>{
  window.addEventListener('load',()=>{check();setInterval(check,700)});
 })();
 </script>
+<script>setTimeout(()=>{if(document.body.classList.contains('catalog-loading')){document.body.classList.remove('catalog-loading');document.body.style.visibility='visible';document.querySelector('#startup-blank')?.remove();const a=document.querySelector('.app');if(a){a.style.display='block';a.querySelector('.nav')&&(a.querySelector('.nav').innerHTML='');a.querySelector('.sub')&&(a.querySelector('.sub').innerHTML='');a.querySelectorAll('.section').forEach(s=>s.innerHTML='');const h=a.querySelector('.heroText');if(h)h.innerHTML='<b>Каталог пока пуст</b>'}}},7000);</script>
