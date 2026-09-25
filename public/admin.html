@@ -269,7 +269,16 @@ window.addEventListener('load',function(){
  const add=()=>{ if(![...c.options].some(o=>o.value==='Мишанины дни')){const o=document.createElement('option');o.value='Мишанины дни';o.textContent='Мишанины дни';c.appendChild(o)}; const names=(()=>{try{return JSON.parse(localStorage.getItem('bubbleUpMenus_Мишанины дни')||'[]')}catch(_){return[]}})(); if(names.length){const cur=m.value;m.innerHTML='';names.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;m.appendChild(o)});if(names.includes(cur))m.value=cur;}};
  add(); const timer=setInterval(()=>{add();if([...c.options].some(o=>o.value==='Мишанины дни'))clearInterval(timer)},200);
 });
-</script><script>\n(function(){\n function go(){\n  const box=document.querySelector('.builderProducts'),c=box&&box.querySelector('.productCampaign'),m=box&&box.querySelector('.productMenu'); if(!c||!m)return;\n  if(![...c.options].some(o=>o.value==='Мишанины дни')){const o=document.createElement('option');o.value='Мишанины дни';o.textContent='Мишанины дни';c.appendChild(o);}\n  if(c.value==='Мишанины дни'){let a=[];try{a=JSON.parse(localStorage.getItem('bubbleUpMenus_Мишанины дни')||'[]')}catch(_){} if(a.length && !a.some(n=>[...m.options].some(o=>o.value===n))){const cur=m.value;m.innerHTML='';a.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;m.appendChild(o)});if(a.includes(cur))m.value=cur;}}\n }\n window.addEventListener('load',()=>{go();let n=0;const t=setInterval(()=>{go();if(++n>30)clearInterval(t)},200)});\n})();\n</script>
+</script><script>
+(function(){
+ function go(){
+  const box=document.querySelector('.builderProducts'),c=box&&box.querySelector('.productCampaign'),m=box&&box.querySelector('.productMenu'); if(!c||!m)return;
+  if(![...c.options].some(o=>o.value==='Мишанины дни')){const o=document.createElement('option');o.value='Мишанины дни';o.textContent='Мишанины дни';c.appendChild(o);}
+  if(c.value==='Мишанины дни'){let a=[];try{a=JSON.parse(localStorage.getItem('bubbleUpMenus_Мишанины дни')||'[]')}catch(_){} if(a.length && !a.some(n=>[...m.options].some(o=>o.value===n))){const cur=m.value;m.innerHTML='';a.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;m.appendChild(o)});if(a.includes(cur))m.value=cur;}}
+ }
+ window.addEventListener('load',()=>{go();let n=0;const t=setInterval(()=>{go();if(++n>30)clearInterval(t)},200)});
+})();
+</script>
 <script>
 window.addEventListener('load',function(){
  const panel=document.querySelector('.campaignCreatePanel'); if(!panel||panel.querySelector('.campaignList'))return;
