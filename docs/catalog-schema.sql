@@ -43,11 +43,14 @@ create table addons (
   name text not null,
   price integer not null default 0,
   image_url text,
+  selection_mode text not null default 'single',
   sort_order integer not null default 0
 );
 
 create table product_addon_groups (
   product_id uuid not null references products(id) on delete cascade,
   group_id uuid not null references addon_groups(id) on delete cascade,
+  is_required boolean not null default false,
+  max_quantity integer not null default 1,
   primary key (product_id, group_id)
 );
