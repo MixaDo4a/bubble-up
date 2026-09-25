@@ -8,6 +8,9 @@ export async function POST(request: Request) {
   const bucket = process.env.SUPABASE_STORAGE_BUCKET || "drinkit-media";
   if (!key) return NextResponse.json({ error: "SUPABASE_SERVICE_ROLE_KEY is not configured" }, { status: 503 });
   const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
+  const size = Number(body.size || 0);
+  const max = 50 * 1024 * 1024;
+  if (size > max) return NextResponse.json({ error: "Media file exceeds the 50 MB limit" }, { status: 413 });
   const name = String(body.name || "").replace(/[^a-zA-Z0-9._-]/g, "_");
   if (!name) return NextResponse.json({ error: "name is required" }, { status: 400 });
   const path = `${crypto.randomUUID()}-${name}`;
