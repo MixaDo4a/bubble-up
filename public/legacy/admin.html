@@ -467,7 +467,7 @@ window.addEventListener('load',()=>{const side=[...document.querySelectorAll('.s
 </script>
 <script>
 /* Keep campaign selectors synchronized while navigating the constructor. */
-window.addEventListener('load',()=>{let n=0;const sync=async()=>{try{const rows=await (await fetch('/api/data?entity=campaigns&_='+Date.now(),{cache:'no-store'})).json();const opts=rows.map(x=>'<option value="'+x.id+'">'+String(x.name).replace(/[<>]/g,'')+'</option>').join('');document.querySelectorAll('.cloudCampaignSelect,.productCampaign').forEach(s=>{const cur=s.value;s.innerHTML=opts;if(rows.some(x=>x.id===cur))s.value=cur});}catch(_){}};sync();const t=setInterval(()=>{sync();if(++n>30)clearInterval(t)},500)});
+window.addEventListener('load',()=>{if(false)return;let n=0;const sync=async()=>{try{const rows=await (await fetch('/api/data?entity=campaigns&_='+Date.now(),{cache:'no-store'})).json();const opts=rows.map(x=>'<option value="'+x.id+'">'+String(x.name).replace(/[<>]/g,'')+'</option>').join('');document.querySelectorAll('.cloudCampaignSelect,.productCampaign').forEach(s=>{const cur=s.value;s.innerHTML=opts;if(rows.some(x=>x.id===cur))s.value=cur});}catch(_){}};sync();const t=setInterval(()=>{sync();if(++n>30)clearInterval(t)},500)});
 </script>
 <script>
 /* Supabase campaign management: edit and delete rows without browser storage. */
