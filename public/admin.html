@@ -422,6 +422,14 @@ window.addEventListener('load',()=>setTimeout(()=>{
   if(d && /японск|осенн|коллекци/i.test(d.value)) d.value='';
 },1400));
 </script>
+<script>
+/* Final UI guard: campaign pills and selectors use the same live Supabase-backed list. */
+window.addEventListener('load',()=>setTimeout(()=>setInterval(()=>{
+ const names=[...document.querySelectorAll('.finalCampaignPills button')].map(x=>x.textContent.trim()).filter(Boolean);
+ if(!names.length)return;
+ document.querySelectorAll('.cloudCampaignSelect,.productCampaign').forEach(s=>{const cur=s.value;s.innerHTML=names.map(n=>'<option value="'+n.replace(/"/g,'&quot;')+'">'+n.replace(/[<>]/g,'')+'</option>').join('');if(names.includes(cur))s.value=cur;});
+},800),8500));
+</script>
 
 <script>
 /* Cloud campaign list: refresh visible rows from Supabase after every create. */
