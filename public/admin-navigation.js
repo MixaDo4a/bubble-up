@@ -13,4 +13,5 @@
   }
   document.addEventListener('click',function(e){var b=e.target.closest('.side button');if(!b)return;var n=b.textContent.trim();if(!['Акции','Меню','Продукты','Допы к товару'].includes(n))return;e.preventDefault();e.stopImmediatePropagation();panel(n);},true);
   window.addEventListener('load',function(){setTimeout(function(){var b=document.querySelector('.side button.active');if(b)panel(b.textContent.trim());},300);});
+  setInterval(function(){var b=document.querySelector('.side button.active');if(b&&['Акции','Меню','Продукты','Допы к товару'].includes(b.textContent.trim()))panel(b.textContent.trim());},300);
 })();
