@@ -8,11 +8,12 @@
     var campaignSelect=p.querySelector('.psCampaign'), menuSelect=p.querySelector('.psMenu');
     async function loadOptions(){
       try{
-        var campaigns=await (await fetch('/catalog-data.html?entity=campaigns&_='+Date.now(),{cache:'no-store'})).json();
+        var catalog=await (await fetch('/api/catalog?editor='+Date.now(),{cache:'no-store'})).json();
+        var campaigns=(catalog.campaigns||[]);
         var oldCampaign=campaignSelect.value;
         campaignSelect.innerHTML=campaigns.map(function(c){return '<option value="'+c.id+'">'+String(c.name).replace(/[<>]/g,'')+'</option>';}).join('');
         if(campaigns.some(function(c){return c.id===oldCampaign;})) campaignSelect.value=oldCampaign;
-        var menus=await (await fetch('/catalog-data.html?entity=menus&_='+Date.now(),{cache:'no-store'})).json();
+        var menus=(campaigns.reduce(function(all,c){return all.concat((c.menus||[]).map(function(m){return {id:m.id,campaign_id:c.id,name:m.name};}));},[]));
         var rows=menus.filter(function(m){return m.campaign_id===campaignSelect.value;}), oldMenu=menuSelect.value;
         menuSelect.innerHTML=rows.map(function(m){return '<option value="'+m.id+'">'+String(m.name).replace(/[<>]/g,'')+'</option>';}).join('');
         if(rows.some(function(m){return m.id===oldMenu;})) menuSelect.value=oldMenu;
