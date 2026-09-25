@@ -29,7 +29,7 @@
         var menu=p.querySelector('.psMenu').value;
         var main=p.querySelector('.psMain').checked;
         if(!name || !menu){status.textContent='Выберите меню и укажите название';return;}
-        var response=await fetch('/catalog-data.html',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({entity:'products',data:{menu_id:menu,name:name,price:price,is_main:main,sort_order:0}})});
+        var response=await fetch('/api/admin/catalog',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({entity:'products',data:{menu_id:menu,name:name,price:price,is_main:main,sort_order:0}})});
         var created=await response.json();
         if(!response.ok) throw new Error(created.error||'Не удалось сохранить продукт');
         var row=Array.isArray(created)?created[0]:created;
