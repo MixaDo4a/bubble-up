@@ -477,14 +477,6 @@ window.addEventListener('load',()=>setTimeout(()=>{const box=document.querySelec
 <script>
 window.addEventListener('load',()=>{const K='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwdHplam1kdHNtbHhmb2RpaHIiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc4NDA2NzYyNCwiZXhwIjoyMDk2NjM2NjI0fQ.VMG5eWULDR34Q5vHoMXCJgiJuhozKxIO0SVT3C3ncvc',B='https://lptzejmdtsmnlxfodihr.supabase.co/rest/v1';const h={apikey:K,Authorization:'Bearer '+K};const run=async()=>{try{const cs=await (await fetch(B+'/campaigns?active=eq.true&select=id,name&order=created_at.asc',{headers:h})).json();const ms=await (await fetch(B+'/menus?select=id,campaign_id,name&order=sort_order.asc',{headers:h})).json();const mbox=document.querySelector('.builderMenus'),msel=mbox?.querySelector('.cloudCampaignSelect');if(msel&&Array.isArray(cs)){const cur=msel.value;msel.innerHTML=cs.map(x=>'<option value="'+x.id+'">'+x.name+'</option>').join('');if(cs.some(x=>x.id===cur))msel.value=cur;msel.dispatchEvent(new Event('change'));}const pc=document.querySelector('.productCampaign');if(pc&&Array.isArray(cs)){const cur=pc.value;pc.innerHTML=cs.map(x=>'<option value="'+x.id+'">'+x.name+'</option>').join('');if(cs.some(x=>x.id===cur))pc.value=cur;pc.dispatchEvent(new Event('change'));}const pm=document.querySelector('.productMenu');if(pm&&Array.isArray(ms)&&pc){const rows=ms.filter(x=>x.campaign_id===pc.value),cur=pm.value;pm.innerHTML=rows.map(x=>'<option value="'+x.id+'">'+x.name+'</option>').join('');if(rows.some(x=>x.id===cur))pm.value=cur;pm.dispatchEvent(new Event('change'));}}catch(e){}};run();setInterval(run,1500)});
 </script>
-<script>
-/* Keep campaign selectors synchronized with Supabase after legacy timers finish. */
-window.addEventListener('load',()=>setTimeout(()=>setInterval(async()=>{
- try{const cs=await (await fetch('/api/admin/catalog?entity=campaigns&_='+Date.now(),{cache:'no-store'})).json();if(!Array.isArray(cs))return;const names=cs.map(x=>x.name).filter(Boolean);
-   document.querySelectorAll('.cloudCampaignSelect,.builderMenus select:not(.productMenu),.productCampaign').forEach(s=>{const cur=s.value;s.innerHTML=names.map(n=>'<option value="'+String(n).replace(/"/g,'&quot;')+'">'+String(n).replace(/[<>]/g,'')+'</option>').join('');if(names.includes(cur))s.value=cur;});
- }catch(_){ }
-},1000),2500);
-</script>
 <script id="final-cloud-constructor">
 (function(){
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
