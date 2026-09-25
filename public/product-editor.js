@@ -23,7 +23,8 @@
       }catch(_){ }
     }
     campaignSelect.addEventListener('change',loadOptions); loadOptions();
-    button.addEventListener('click', async function(){
+    button.addEventListener('click', async function(event){
+      event.preventDefault(); event.stopImmediatePropagation();
       var status=p.querySelector('.psStatus');
       status.textContent='Сохраняю…';
       try{
@@ -38,6 +39,7 @@
         var created=await response.json();
         if(!response.ok) throw new Error(created.error||'Не удалось сохранить продукт');
         var row=Array.isArray(created)?created[0]:created;
+        await fetch('/api/admin/catalog',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({entity:'products',id:row.id,data:{volume_ml:volume,weight_g:weight}})});
         var groupsChecked=[].slice.call(p.querySelectorAll('.psGroup:checked')).map(function(x){return x.value;}), addonsChecked=[].slice.call(p.querySelectorAll('.psAddon:checked')).map(function(x){return x.value;});
         for(var gi=0;gi<groupsChecked.length;gi++) await fetch('/api/admin/catalog',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({entity:'product_addon_groups',data:{product_id:row.id,group_id:groupsChecked[gi],is_required:false,max_quantity:1}})});
         for(var ai=0;ai<addonsChecked.length;ai++) await fetch('/api/admin/catalog',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({entity:'product_addons',data:{product_id:row.id,addon_id:addonsChecked[ai],is_required:false}})});
