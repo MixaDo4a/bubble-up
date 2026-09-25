@@ -5,6 +5,20 @@
     var button=p.querySelector('.psAdd');
     if(!button) return;
     p.dataset.bound='1';
+    var campaignSelect=p.querySelector('.psCampaign'), menuSelect=p.querySelector('.psMenu');
+    async function loadOptions(){
+      try{
+        var campaigns=await (await fetch('/catalog-data.html?entity=campaigns&_='+Date.now(),{cache:'no-store'})).json();
+        var oldCampaign=campaignSelect.value;
+        campaignSelect.innerHTML=campaigns.map(function(c){return '<option value="'+c.id+'">'+String(c.name).replace(/[<>]/g,'')+'</option>';}).join('');
+        if(campaigns.some(function(c){return c.id===oldCampaign;})) campaignSelect.value=oldCampaign;
+        var menus=await (await fetch('/catalog-data.html?entity=menus&_='+Date.now(),{cache:'no-store'})).json();
+        var rows=menus.filter(function(m){return m.campaign_id===campaignSelect.value;}), oldMenu=menuSelect.value;
+        menuSelect.innerHTML=rows.map(function(m){return '<option value="'+m.id+'">'+String(m.name).replace(/[<>]/g,'')+'</option>';}).join('');
+        if(rows.some(function(m){return m.id===oldMenu;})) menuSelect.value=oldMenu;
+      }catch(_){ }
+    }
+    campaignSelect.addEventListener('change',loadOptions); loadOptions();
     button.addEventListener('click', async function(){
       var status=p.querySelector('.psStatus');
       status.textContent='Сохраняю…';
