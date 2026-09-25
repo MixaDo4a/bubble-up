@@ -7,6 +7,7 @@
     p.dataset.bound='1';
     button.addEventListener('click', async function(){
       var status=p.querySelector('.psStatus');
+      status.textContent='Сохраняю…';
       try{
         var name=p.querySelector('.psName').value.trim();
         var price=Number(p.querySelector('.psPrice').value||0);
