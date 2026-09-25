@@ -44,7 +44,7 @@ export async function getPublishedCatalog(): Promise<CatalogCampaign[]> {
       });
       mapped.push({ ...menu, products: enriched });
     }
-    result.push({ ...row, menus: mapped } as CatalogCampaign);
+      result.push({ ...row, menus: mapped } as unknown as CatalogCampaign);
   }
   return result;
 }
