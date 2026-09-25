@@ -1,1 +1,2 @@
-export { POST, runtime } from "../api/catalog/media/route";
+export { POST } from "../api/catalog/media/route";
+export const runtime = "nodejs";

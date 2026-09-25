@@ -1,1 +1,2 @@
-export { POST, runtime } from "../api/media/sign/route";
+export { POST } from "../api/media/sign/route";
+export const runtime = "nodejs";
