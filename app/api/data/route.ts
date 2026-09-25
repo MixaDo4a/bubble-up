@@ -1,1 +1,2 @@
-export { GET, POST, PATCH, DELETE, runtime } from "../admin/catalog/route";
+export { GET, POST, PATCH, DELETE } from "../admin/catalog/route";
+export const runtime = "nodejs";
