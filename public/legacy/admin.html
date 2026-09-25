@@ -413,6 +413,17 @@ window.addEventListener('load',()=>{let n=0;const purge=async()=>{try{const cs=a
 </script>
 
 <script>
+/* Supabase is authoritative: do not leave legacy demo values in the campaign form. */
+window.addEventListener('load',()=>setTimeout(()=>{
+  const p=document.querySelector('.campaignCreatePanel');
+  if(!p)return;
+  const n=p.querySelector('.campaignCreateName'), d=p.querySelector('.campaignCreateDesc');
+  if(n && /Японский фест|Осень|Мишанины дни|Кофе/.test(n.value)) n.value='';
+  if(d && /японск|осенн|коллекци/i.test(d.value)) d.value='';
+},1400));
+</script>
+
+<script>
 /* Cloud campaign list: refresh visible rows from Supabase after every create. */
 window.addEventListener('load',()=>setTimeout(()=>{
  const panel=document.querySelector('.campaignCreatePanel'); if(!panel)return;
