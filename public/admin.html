@@ -440,7 +440,7 @@ window.addEventListener('load',()=>setTimeout(()=>setInterval(()=>{
  if(false)return;
  const names=[...document.querySelectorAll('.finalCampaignPills button')].map(x=>x.textContent.trim()).filter(Boolean);
  if(!names.length)return;
- document.querySelectorAll('.cloudCampaignSelect,.productCampaign').forEach(s=>{const cur=s.value;s.innerHTML=names.map(n=>'<option value="'+n.replace(/"/g,'&quot;')+'">'+n.replace(/[<>]/g,'')+'</option>').join('');if(names.includes(cur))s.value=cur;});
+ if(false)document.querySelectorAll('.cloudCampaignSelect,.productCampaign').forEach(s=>{const cur=s.value;s.innerHTML=names.map(n=>'<option value="'+n.replace(/"/g,'&quot;')+'">'+n.replace(/[<>]/g,'')+'</option>').join('');if(names.includes(cur))s.value=cur;});
 },800),8500));
 </script>
 
@@ -468,7 +468,7 @@ window.addEventListener('load',()=>{if(false)return;const side=[...document.quer
 </script>
 <script>
 /* Keep campaign selectors synchronized while navigating the constructor. */
-window.addEventListener('load',()=>{if(false)return;let n=0;const sync=async()=>{try{const rows=await (await fetch('/catalog-data.html?entity=campaigns&_='+Date.now(),{cache:'no-store'})).json();const opts=rows.map(x=>'<option value="'+x.id+'">'+String(x.name).replace(/[<>]/g,'')+'</option>').join('');document.querySelectorAll('.cloudCampaignSelect,.productCampaign').forEach(s=>{const cur=s.value;s.innerHTML=opts;if(rows.some(x=>x.id===cur))s.value=cur});}catch(_){}};sync();const t=setInterval(()=>{sync();if(++n>30)clearInterval(t)},500)});
+window.addEventListener('load',()=>{if(false)return;let n=0;const sync=async()=>{try{const rows=await (await fetch('/catalog-data.html?entity=campaigns&_='+Date.now(),{cache:'no-store'})).json();const opts=rows.map(x=>'<option value="'+x.id+'">'+String(x.name).replace(/[<>]/g,'')+'</option>').join('');if(false)document.querySelectorAll('.cloudCampaignSelect,.productCampaign').forEach(s=>{const cur=s.value;s.innerHTML=opts;if(rows.some(x=>x.id===cur))s.value=cur});}catch(_){}};sync();const t=setInterval(()=>{sync();if(++n>30)clearInterval(t)},500)});
 </script>
 <script>
 /* Supabase campaign management: edit and delete rows without browser storage. */
