@@ -437,6 +437,7 @@ window.addEventListener('load',()=>setTimeout(()=>{
 <script>
 /* Final UI guard: campaign pills and selectors use the same live Supabase-backed list. */
 window.addEventListener('load',()=>setTimeout(()=>setInterval(()=>{
+ if(false)return;
  const names=[...document.querySelectorAll('.finalCampaignPills button')].map(x=>x.textContent.trim()).filter(Boolean);
  if(!names.length)return;
  document.querySelectorAll('.cloudCampaignSelect,.productCampaign').forEach(s=>{const cur=s.value;s.innerHTML=names.map(n=>'<option value="'+n.replace(/"/g,'&quot;')+'">'+n.replace(/[<>]/g,'')+'</option>').join('');if(names.includes(cur))s.value=cur;});
