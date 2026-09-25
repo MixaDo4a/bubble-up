@@ -40,7 +40,7 @@ export async function getPublishedCatalog(): Promise<CatalogCampaign[]> {
       }
       const enriched = products.map(product => {
         const ids = links.filter(link => link.product_id === product.id).map(link => link.group_id);
-        return { ...product, addon_groups: groups.filter(group => ids.includes(group.id)).map(group => ({ ...group, addons: addons.filter(addon => addon.group_id === group.id) })) };
+        return { ...product, addon_groups: groups.filter(group => ids.includes(group.id)).map(group => { const link = links.find(item => item.product_id === product.id && item.group_id === group.id) || {}; return { ...group, is_required: Boolean(link.is_required), max_quantity: Number(link.max_quantity || 1), addons: addons.filter(addon => addon.group_id === group.id) }; }) };
       });
       mapped.push({ ...menu, products: enriched });
     }
