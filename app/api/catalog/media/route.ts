@@ -9,7 +9,16 @@ export async function POST(request: Request) {
   if(!url||!key) return NextResponse.json({error:"Supabase server storage is not configured"},{status:503});
   const body=await request.json() as {table?:string; id?:string; field?:string; value?:string};
   if(!body.table||!allowed.has(body.table)||!body.id||!body.field||!['image_url','video_url'].includes(body.field)) return NextResponse.json({error:"Invalid media update"},{status:400});
-  const response=await fetch(`${url.replace(/\/$/,'')}/rest/v1/${body.table}?id=eq.${encodeURIComponent(body.id)}`,{method:'PATCH',headers:{apikey:key,Authorization:`Bearer ${key}`,'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify({[body.field]:body.value})});
+  const base=url.replace(/\/$/,"");
+  try {
+    const oldRes=await fetch(`${base}/rest/v1/${body.table}?id=eq.${encodeURIComponent(body.id)}&select=${body.field}`,{headers:{apikey:key,Authorization:`Bearer ${key}`} });
+    const oldRows=await oldRes.json(); const old=Array.isArray(oldRows)?oldRows[0]?.[body.field]:undefined;
+    if(old && body.value && old!==body.value){
+      const marker="/storage/v1/object/public/"; const at=String(old).indexOf(marker);
+      if(at>=0){const rest=String(old).slice(at+marker.length), slash=rest.indexOf("/");if(slash>0){const bucket=rest.slice(0,slash),path=rest.slice(slash+1);await fetch(`${base}/storage/v1/object/${bucket}/${path.split("/").map(encodeURIComponent).join("/")}`,{method:"DELETE",headers:{apikey:key,Authorization:`Bearer ${key}`}})}}
+    }
+  } catch (_) {}
+  const response=await fetch(`${base}/rest/v1/${body.table}?id=eq.${encodeURIComponent(body.id)}`,{method:'PATCH',headers:{apikey:key,Authorization:`Bearer ${key}`,'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify({[body.field]:body.value})});
   return NextResponse.json(await response.json(),{status:response.status});
 }
 
