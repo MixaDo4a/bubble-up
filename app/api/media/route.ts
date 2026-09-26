@@ -16,7 +16,7 @@ export async function POST(request: Request) {
   const safe = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
   const path = `${crypto.randomUUID()}-${safe}`;
   const endpoint = `${url.replace(/\/$/, "")}/storage/v1/object/${encodeURIComponent(bucket)}/${encodeURIComponent(path)}`;
-  const uploaded = await fetch(endpoint, { method: "POST", headers: { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": file.type, "x-upsert": "false" }, body: await file.arrayBuffer() });
+  const uploaded = await fetch(endpoint, { method: "POST", headers: { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": file.type, "Cache-Control": "public, max-age=31536000, immutable", "x-upsert": "false" }, body: await file.arrayBuffer() });
   if (!uploaded.ok) return NextResponse.json({ error: `Storage upload failed: ${uploaded.status}` }, { status: 502 });
   return NextResponse.json({ path, url: `${url.replace(/\/$/, "")}/storage/v1/object/public/${encodeURIComponent(bucket)}/${encodeURIComponent(path)}`, type: file.type, size: file.size });
 }
