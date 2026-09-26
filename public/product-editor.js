@@ -2,6 +2,7 @@
   function bind(){
     var p=document.querySelector('.productStandalone');
     if(!p || p.dataset.bound==='1') return;
+    p.dataset.editorManaged='1';
     var button=p.querySelector('.psAdd'); if(!button)return; p.dataset.bound='1';
     var campaignSelect=p.querySelector('.psCampaign'), menuSelect=p.querySelector('.psMenu'), currentId=null, allProducts=[];
     var picker=document.createElement('div'); picker.className='psAddonPicker'; picker.style.cssText='margin:14px 0;padding:14px;border:1px solid #dbe1eb;border-radius:12px;max-height:260px;overflow:auto'; picker.innerHTML='<b>Допы для продукта</b><input class="psAddonSearch" placeholder="Поиск группы или допа" style="display:block;width:100%;margin:8px 0;padding:8px;border:1px solid #dbe1eb;border-radius:8px"><div class="psAddonRows">Загрузка…</div>'; var mediaGrid=p.querySelector('.psImage')?.closest('.grid'); if(mediaGrid)mediaGrid.before(picker); else p.appendChild(picker);
