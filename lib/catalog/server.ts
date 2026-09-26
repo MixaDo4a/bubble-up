@@ -30,9 +30,12 @@ export async function getPublishedCatalog(): Promise<CatalogCampaign[]> {
       let links: Array<Record<string, unknown>> = [];
       let groups: Array<Record<string, unknown>> = [];
       let addons: Array<Record<string, unknown>> = [];
+      let productAddonLinks: Array<Record<string, unknown>> = [];
       if (productIds.length) {
         const linkResponse = await fetch(`${c.url}/rest/v1/product_addon_groups?product_id=in.(${productIds.join(",")})`, { headers, cache: "no-store" });
         if (linkResponse.ok) links = await linkResponse.json();
+        const productAddonResponse = await fetch(`${c.url}/rest/v1/product_addons?product_id=in.(${productIds.join(",")})`, { headers, cache: "no-store" });
+        if (productAddonResponse.ok) productAddonLinks = await productAddonResponse.json();
         const groupResponse = await fetch(`${c.url}/rest/v1/addon_groups?order=sort_order.asc`, { headers, cache: "no-store" });
         if (groupResponse.ok) groups = await groupResponse.json();
         const addonResponse = await fetch(`${c.url}/rest/v1/addons?order=sort_order.asc`, { headers, cache: "no-store" });
@@ -40,7 +43,7 @@ export async function getPublishedCatalog(): Promise<CatalogCampaign[]> {
       }
       const enriched = products.map(product => {
         const ids = links.filter(link => link.product_id === product.id).map(link => link.group_id);
-        return { ...product, addon_groups: groups.filter(group => ids.includes(group.id)).map(group => { const link = links.find(item => item.product_id === product.id && item.group_id === group.id) || {}; return { ...group, is_required: Boolean(link.is_required), max_quantity: Number(link.max_quantity || 1), addons: addons.filter(addon => addon.group_id === group.id) }; }) };
+        return { ...product, addon_groups: groups.filter(group => ids.includes(group.id)).map(group => { const link = links.find(item => item.product_id === product.id && item.group_id === group.id) || {}; return { ...group, is_required: Boolean(link.is_required), max_quantity: Number(link.max_quantity || 1), addons: addons.filter(addon => addon.group_id === group.id && (!productAddonLinks.some(item => item.product_id === product.id) || productAddonLinks.some(item => item.product_id === product.id && item.addon_id === addon.id))) }; }) };
       });
       mapped.push({ ...menu, products: enriched });
     }
