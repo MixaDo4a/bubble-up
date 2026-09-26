@@ -18,8 +18,10 @@ export async function POST(request: Request) {
   const signed = await fetch(endpoint, { method: "POST", headers: { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json" }, body: JSON.stringify({ upsert: false }) });
   const payload = (await signed.json().catch(() => ({}))) as Record<string, unknown>;
   if (!signed.ok) return NextResponse.json({ error: payload.message || payload.error || `Storage signing failed: ${signed.status}` }, { status: 502 });
-  const token = payload.token || typeof payload.signedURL === 'string' ? payload.signedURL.split('token=')[1] : undefined;
+  const signedUrl = typeof payload.signedURL === 'string' ? payload.signedURL : '';
+  const token = typeof payload.token === 'string' ? payload.token : (signedUrl ? signedUrl.split('token=')[1] : undefined);
   if (!token) return NextResponse.json({ error: "Storage did not return an upload token" }, { status: 502 });
   return NextResponse.json({ path, token, url: `${url.replace(/\/$/, "")}/storage/v1/object/public/${encodeURIComponent(bucket)}/${encodeURIComponent(path)}` });
 }
+
 
