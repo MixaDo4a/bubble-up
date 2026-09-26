@@ -1,0 +1,9 @@
+{
+  "name": "KRMBl Cookies",
+  "short_name": "KRMBl",
+  "start_url": "/legacy/index.html",
+  "display": "standalone",
+  "background_color": "#14171d",
+  "theme_color": "#14171d",
+  "orientation": "portrait"
+}
