@@ -405,7 +405,7 @@ window.addEventListener('load',()=>{const side=[...document.querySelectorAll('.s
 <script>
 (()=>{
  const clean=()=>{
-  document.querySelectorAll('.builderMenus .grid .field:first-child').forEach(x=>x.remove());
+  document.querySelectorAll('.builderMenus .cloudCampaignField').forEach(x=>x.remove());
   const p=document.querySelector('.addonAdminPanel'); if(p){
    const modes=[...p.querySelectorAll('.addonModeFixed')]; modes.slice(1).forEach(x=>x.remove());
    const selects=[...p.querySelectorAll('.addonMode select')]; selects.slice(1).forEach(x=>x.closest('label')?.remove());
