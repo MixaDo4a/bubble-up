@@ -16,9 +16,10 @@ export async function POST(request: Request) {
   const path = `${crypto.randomUUID()}-${name}`;
   const endpoint = `${url.replace(/\/$/, "")}/storage/v1/object/upload/sign/${encodeURIComponent(bucket)}/${encodeURIComponent(path)}`;
   const signed = await fetch(endpoint, { method: "POST", headers: { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json" }, body: JSON.stringify({ upsert: false }) });
-  const payload = (await signed.json().catch(() => ({}))) as Record<string, any>;
+  const payload = (await signed.json().catch(() => ({}))) as Record<string, unknown>;
   if (!signed.ok) return NextResponse.json({ error: payload.message || payload.error || `Storage signing failed: ${signed.status}` }, { status: 502 });
   const token = payload.token || payload.signedURL?.split("token=")[1];
   if (!token) return NextResponse.json({ error: "Storage did not return an upload token" }, { status: 502 });
   return NextResponse.json({ path, token, url: `${url.replace(/\/$/, "")}/storage/v1/object/public/${encodeURIComponent(bucket)}/${encodeURIComponent(path)}` });
 }
+
