@@ -7,7 +7,13 @@
       'Продукты':['.productStandalone'],
       'Допы к товару':['.addonAdminPanel']
     }, wanted=map[name]; if(!wanted)return;
-    document.querySelectorAll('.side button').forEach(function(b){b.classList.toggle('active',b.textContent.trim()===name);});
+    document.querySelectorAll('.side button').forEach(function(b){
+      var selected=b.textContent.trim()===name;
+      b.classList.toggle('active',selected);
+      b.dataset.selected=selected?'true':'false';
+      b.style.setProperty('background',selected?'#2f4ed7':'transparent','important');
+      b.style.setProperty('color',selected?'#fff':'#b7c1db','important');
+    });
     ['.campaignCreatePanel','.builderMenus','.builderProducts','.productStandalone','.addonAdminPanel'].forEach(function(sel){document.querySelectorAll(sel).forEach(function(x){x.style.setProperty('display',wanted.indexOf(sel)>=0?'block':'none','important');});});
     if(top)top.textContent=name;
   }
