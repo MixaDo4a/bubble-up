@@ -1,6 +1,6 @@
 (function(){
   const names=['Акции','Меню','Продукты','Допы к товару'];
-  const map={Акции:['.campaignCreatePanel'],Меню:['.builderMenus'],Продукты:['.productStandalone','.builderProducts'], 'Допы к товару':['.addonAdminPanel']};
+  const map={Акции:['.campaignCreatePanel'],Меню:['.builderMenus'],Продукты:['.productStandalone'], 'Допы к товару':['.addonAdminPanel']};
   function setActive(name){
     const main=document.querySelector('.main'), top=main?.querySelector('.topline h1'); if(!main||!map[name])return;
     document.querySelectorAll('.side button').forEach(b=>{const on=b.textContent.trim()===name;b.classList.toggle('active',on);b.dataset.selected=on?'true':'false';b.style.setProperty('background',on?'#2f4ed7':'transparent','important');b.style.setProperty('color',on?'#fff':'#b7c1db','important')});
