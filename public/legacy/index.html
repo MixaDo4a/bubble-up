@@ -120,6 +120,11 @@ html,body{overflow-x:hidden}.app{overflow:visible}
 body:not(.day) .app>.nav.catalog-pinned,body:not(.day) .app>.sub.catalog-pinned{background:rgba(35,24,38,.78)!important;border-color:rgba(255,255,255,.16)!important;box-shadow:0 8px 24px rgba(0,0,0,.3)!important;color:#fff!important}
 .app>.nav.catalog-pinned{top:0!important}.app>.sub.catalog-pinned{top:56px!important}
 </style>
+<style id="catalog-sticky-final">
+.app>.nav,.app>.sub{position:sticky!important;left:auto!important;right:auto!important;width:100%!important;margin:0!important;transform:none!important;z-index:90!important}
+.app>.nav{top:0!important}
+.app>.sub{top:56px!important}
+</style>
 <script id="catalog-pin-final-js">
 (()=>{
  const boot=()=>{
