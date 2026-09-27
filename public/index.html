@@ -139,3 +139,14 @@ body:not(.day) .app>.nav.catalog-pinned,body:not(.day) .app>.sub.catalog-pinned{
 
 <script src="/catalog-runtime-v2.js"></script>
 
+
+<style id="catalog-nav-final">
+.app>.nav,.app>.sub{position:sticky!important;display:flex!important;align-items:center!important;width:100%!important;z-index:100!important;overflow:auto!important;scrollbar-width:none!important}
+.app>.nav{top:0!important;min-height:56px!important;padding:0 34px!important;gap:30px!important}
+.app>.sub{top:56px!important;min-height:48px!important;padding:0 34px!important;gap:30px!important}
+.app>.nav button,.app>.sub button,.app>.nav b,.app>.sub span{appearance:none!important;border:0!important;background:transparent!important;color:inherit!important;font:inherit!important;white-space:nowrap!important;cursor:pointer!important;padding:14px 0!important;box-shadow:none!important}
+.app>.nav button,.app>.sub button{opacity:.65;transition:opacity .2s ease}
+.app>.nav button:first-child,.app>.nav button[aria-current="true"]{opacity:1;font-weight:600}
+body:not(.day) .app>.nav,body:not(.day) .app>.sub{background:rgba(35,24,38,.78)!important;color:#fff!important;border:1px solid rgba(255,255,255,.14)!important;backdrop-filter:blur(18px) saturate(140%)!important;-webkit-backdrop-filter:blur(18px) saturate(140%)!important;box-shadow:0 8px 24px rgba(0,0,0,.28)!important}
+body.day .app>.nav,body.day .app>.sub{background:rgba(255,255,255,.74)!important;color:#321d31!important;border:1px solid rgba(255,255,255,.65)!important;backdrop-filter:blur(18px) saturate(140%)!important;-webkit-backdrop-filter:blur(18px) saturate(140%)!important;box-shadow:0 8px 24px rgba(120,70,90,.16)!important}
+</style>
