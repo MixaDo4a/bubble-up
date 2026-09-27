@@ -158,3 +158,5 @@ body:not(.day) .app>.nav.catalog-pinned,body:not(.day) .app>.sub.catalog-pinned{
 .app>.sub{top:56px!important}
 </style>
 
+
+<script id="startup-splash-failsafe">(()=>{const reveal=()=>{const a=document.querySelector('.app'),s=document.getElementById('startupSplash');if(a){a.style.setProperty('display','block','important');a.style.opacity='1'}document.body.classList.remove('catalog-loading');document.body.style.setProperty('visibility','visible','important');if(s){s.classList.add('is-hidden');setTimeout(()=>s.remove(),800)}};window.setTimeout(reveal,6000);window.addEventListener('error',()=>window.setTimeout(reveal,250),{once:true});})();</script>
