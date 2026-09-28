@@ -182,3 +182,6 @@ body.day .app>.nav,body.day .app>.sub{background:rgba(255,255,255,.74)!important
 <style id="splash-cookie-one-shot">.startup-splash .splash-crumbs img{opacity:0!important;visibility:hidden!important}.startup-splash .splash-crumbs img.cookie-active{opacity:1!important;visibility:visible!important}</style>
 <script id="splash-cookie-one-shot-script">(()=>{const run=()=>{const imgs=[...document.querySelectorAll(".startup-splash .splash-crumbs img")];imgs.forEach((img,i)=>{img.src="/cookie_break.gif";img.classList.remove("cookie-active");setTimeout(()=>{img.classList.add("cookie-active");setTimeout(()=>{img.src="/cookie_break_final.png"},1900)},i*2100)});};if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",run,{once:true});else run()})();</script>
 <style id="safe-area-top-controls">.hero .top{padding-top:calc(env(safe-area-inset-top,0px) + 22px)!important}.hero{padding-top:0!important}@media (max-width:640px){.hero .top{padding-left:4px!important;padding-right:4px!important}}</style>
+<style id="mobile-safe-area-windows">
+@media (max-width: 640px){.screen{padding-top:calc(24px + env(safe-area-inset-top,0px))!important} .agreed-panel.agreed-assistant{padding-top:calc(28px + env(safe-area-inset-top,0px))!important} .assistant-overlay .assistant-shell{padding-top:calc(28px + env(safe-area-inset-top,0px))!important} }
+</style>
