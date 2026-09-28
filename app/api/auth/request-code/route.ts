@@ -48,7 +48,7 @@ export async function POST(request: Request) {
     if (channel !== "telegram") return json({ error: `Канал ${channel} пока требует подключения провайдера` }, 501);
     const recentSince = new Date(Date.now() - 60_000).toISOString();
     const recentResponse = await supabase(`login_codes?phone=eq.${encodeURIComponent(phone)}&created_at=gte.${encodeURIComponent(recentSince)}&select=id&limit=1`);
-    if (recentResponse.ok && (await recentResponse.json()).length) return json({ error: "Новый код можно запросить через минуту" }, 429);
+    if (recentResponse.ok && ((await recentResponse.json()) as unknown[]).length) return json({ error: "Новый код можно запросить через минуту" }, 429);
     const telegram = profile.identity_links?.find((x: { provider: string }) => x.provider === "telegram");
     const botToken = process.env.TELEGRAM_BOT_TOKEN;
     if (!botToken || !telegram?.provider_subject) return json({ error: "Telegram ещё не привязан к профилю" }, 409);
