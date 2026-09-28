@@ -7,6 +7,7 @@ import { NextResponse } from "next/server";
 const URL = process.env.SUPABASE_URL || "https://lptzejmdtsmnlxfodihr.supabase.co";
 
 const KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const PUBLIC_KEY = process.env.SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY || KEY;
 
 const PEPPER = process.env.AUTH_CODE_PEPPER || KEY;
 
@@ -84,7 +85,8 @@ export async function POST(request: Request) {
     let update = await fetch(`${URL}/auth/v1/admin/users/${row.user_id}`, { method: "PUT", headers: adminHeaders, body: updatePayload });
     if (!update.ok) update = await fetch(`${URL}/auth/v1/admin/users/${row.user_id}`, { method: "PATCH", headers: adminHeaders, body: updatePayload });
     if (!update.ok) return out({ error: "Не удалось обновить данные входа" }, 502);
-    const sessionResponse = await fetch(`${URL}/auth/v1/token?grant_type=password`, { method: "POST", headers: adminHeaders, body: JSON.stringify({ email, password: internalPassword }) });
+    const sessionHeaders = { apikey: PUBLIC_KEY || "", Authorization: `Bearer ${PUBLIC_KEY || ""}`, "Content-Type": "application/json" };
+    const sessionResponse = await fetch(`${URL}/auth/v1/token?grant_type=password`, { method: "POST", headers: sessionHeaders, body: JSON.stringify({ email, password: internalPassword }) });
 
     if (!sessionResponse.ok) return out({ error: "РќРµ СѓРґР°Р»РѕСЃСЊ СЃРѕР·РґР°С‚СЊ СЃРµСЃСЃРёСЋ" }, 502);
 
