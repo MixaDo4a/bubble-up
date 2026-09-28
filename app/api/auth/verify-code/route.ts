@@ -33,7 +33,17 @@ export async function POST(request: Request) {
     const used = await db(`login_codes?id=eq.${row.id}&used_at=is.null`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ used_at: new Date().toISOString(), attempts }) });
     if (!used.ok) return out({ error: "Код уже используется или не может быть подтверждён" }, 409);
     await db(`profiles?id=eq.${row.user_id}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ last_login_at: new Date().toISOString() }) });
-    return out({ ok: true, userId: row.user_id, sessionReady: false, message: "Код подтверждён; связывание сессии Auth будет выполнено после регистрации профиля" });
+    const internalPassword = `${crypto.randomUUID()}-${crypto.randomUUID()}`;
+    const adminHeaders = { apikey: KEY, Authorization: `Bearer ${KEY}`, "Content-Type": "application/json" };
+    const userResponse = await fetch(`${URL}/auth/v1/admin/users/${row.user_id}`, { headers: adminHeaders, cache: "no-store" });
+    if (!userResponse.ok) return out({ error: "������� �� ������ � Auth" }, 409);
+    const authUser = (await userResponse.json()) as { email?: string | null };
+    const email = authUser.email || `${phone.replace(/\D/g, "")}@users.krmbl.local`;
+    const update = await fetch(`${URL}/auth/v1/admin/users/${row.user_id}`, { method: "PUT", headers: adminHeaders, body: JSON.stringify({ email, password: internalPassword, email_confirm: true }) });
+    if (!update.ok) return out({ error: "�� ������� ����������� ������" }, 502);
+    const sessionResponse = await fetch(`${URL}/auth/v1/token?grant_type=password`, { method: "POST", headers: adminHeaders, body: JSON.stringify({ email, password: internalPassword }) });
+    if (!sessionResponse.ok) return out({ error: "�� ������� ������ ������" }, 502);
+    return out({ ok: true, userId: row.user_id, session: await sessionResponse.json() });
   } catch (error) {
     console.error("verify-code", error);
     return out({ error: "Сервис авторизации временно недоступен" }, 503);
