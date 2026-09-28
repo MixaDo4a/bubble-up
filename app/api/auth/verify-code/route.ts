@@ -36,13 +36,13 @@ export async function POST(request: Request) {
     const internalPassword = `${crypto.randomUUID()}-${crypto.randomUUID()}`;
     const adminHeaders = { apikey: KEY, Authorization: `Bearer ${KEY}`, "Content-Type": "application/json" };
     const userResponse = await fetch(`${URL}/auth/v1/admin/users/${row.user_id}`, { headers: adminHeaders, cache: "no-store" });
-    if (!userResponse.ok) return out({ error: "������� �� ������ � Auth" }, 409);
+    if (!userResponse.ok) return out({ error: "��Не найден пользователь Auth" }, 409);
     const authUser = (await userResponse.json()) as { email?: string | null };
     const email = authUser.email || `${phone.replace(/\D/g, "")}@users.krmbl.local`;
     const update = await fetch(`${URL}/auth/v1/admin/users/${row.user_id}`, { method: "PUT", headers: adminHeaders, body: JSON.stringify({ email, password: internalPassword, email_confirm: true }) });
-    if (!update.ok) return out({ error: "�� ������� ����������� ������" }, 502);
+    if (!update.ok) return out({ error: "Не удалось обновить пароль" }, 502);
     const sessionResponse = await fetch(`${URL}/auth/v1/token?grant_type=password`, { method: "POST", headers: adminHeaders, body: JSON.stringify({ email, password: internalPassword }) });
-    if (!sessionResponse.ok) return out({ error: "�� ������� ������ ������" }, 502);
+    if (!sessionResponse.ok) return out({ error: "Не удалось создать сессию" }, 502);
     return out({ ok: true, userId: row.user_id, session: await sessionResponse.json() });
   } catch (error) {
     console.error("verify-code", error);
