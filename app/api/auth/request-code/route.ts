@@ -34,10 +34,14 @@ export async function POST(request: Request) {
     if (!phone) return json({ error: "Введите номер телефона в формате 11 цифр" }, 400);
     if (!SERVICE_KEY || !PEPPER) return json({ error: "Сервис авторизации ещё не настроен" }, 503);
 
-    const profileResponse = await supabase(`profiles?phone=eq.${encodeURIComponent(phone)}&select=id,phone,display_name,identity_links(provider,provider_subject)&limit=1`);
+    const profileResponse = await supabase(`profiles?phone=eq.${encodeURIComponent(phone)}&select=id,phone,display_name,is_active&limit=1`);
     if (!profileResponse.ok) return json({ error: "Не удалось проверить профиль" }, 502);
     const profiles = (await profileResponse.json()) as Array<{ id: string; phone: string; display_name: string; is_active?: boolean; identity_links?: Array<{ provider: string; provider_subject: string }> }>;
     const profile = profiles[0];
+    if (profile) {
+      const linksResponse = await supabase(`identity_links?user_id=eq.${profile.id}&provider=eq.telegram&select=provider,provider_subject&limit=1`);
+      profile.identity_links = linksResponse.ok ? await linksResponse.json() : [];
+    }
     if (!profile) return json({ error: "Пользователь не зарегистрирован. Завершите регистрацию через Telegram" }, 404);
     if (!profile.is_active) return json({ error: "Профиль заблокирован" }, 403);
 
