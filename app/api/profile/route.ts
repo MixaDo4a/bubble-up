@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 const URL = process.env.SUPABASE_URL || "https://lptzejmdtsmnlxfodihr.supabase.co";
 const KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const out = (data: unknown, status = 200) => NextResponse.json(data, { status, headers: { "Cache-Control": "no-store" } });
+const out = (data: unknown, status = 200) => NextResponse.json(data, { status, headers: { "Cache-Control": "no-store", "Content-Type": "application/json; charset=utf-8" } });
 async function identity(request: Request) {
   const bearer = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
   if (!bearer || !KEY) return null;
@@ -30,3 +30,4 @@ export async function PATCH(request: Request) {
     return out({ ok: true });
   } catch { return out({ error: "Профиль временно недоступен" }, 503); }
 }
+

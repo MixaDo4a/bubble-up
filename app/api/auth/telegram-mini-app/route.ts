@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 const URL = process.env.SUPABASE_URL || "https://lptzejmdtsmnlxfodihr.supabase.co";
 const KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const BOT = process.env.TELEGRAM_BOT_TOKEN;
-const out = (data: unknown, status = 200) => NextResponse.json(data, { status, headers: { "Cache-Control": "no-store" } });
+const out = (data: unknown, status = 200) => NextResponse.json(data, { status, headers: { "Cache-Control": "no-store", "Content-Type": "application/json; charset=utf-8" } });
 const db = (path: string, init: RequestInit = {}) => fetch(`${URL}/rest/v1/${path}`, { ...init, headers: { apikey: KEY || "", Authorization: `Bearer ${KEY || ""}`, "Content-Type": "application/json", ...(init.headers || {}) }, cache: "no-store" });
 
 export async function POST(request: Request) {
@@ -29,3 +29,4 @@ export async function POST(request: Request) {
     return out({ registered: true, userId: links[0].user_id });
   } catch (error) { console.error("telegram-mini-app", error); return out({ error: "Проверка Telegram временно недоступна" }, 503); }
 }
+
