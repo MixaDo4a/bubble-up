@@ -4,7 +4,7 @@ const URL = process.env.SUPABASE_URL || "https://lptzejmdtsmnlxfodihr.supabase.c
 const PUBLIC_KEY = process.env.SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 const out = (data: unknown, status = 200) =>
-  NextResponse.json(data, { status, headers: { "Cache-Control": "no-store" } });
+  NextResponse.json(data, { status, headers: { "Cache-Control": "no-store", "Content-Type": "application/json; charset=utf-8" } });
 
 export async function POST(request: Request) {
   try {
@@ -32,3 +32,4 @@ export async function POST(request: Request) {
     return out({ error: "Сервис авторизации временно недоступен" }, 503);
   }
 }
+

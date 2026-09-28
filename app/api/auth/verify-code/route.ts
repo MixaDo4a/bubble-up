@@ -11,7 +11,7 @@ const PUBLIC_KEY = process.env.SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_
 
 const PEPPER = process.env.AUTH_CODE_PEPPER || KEY;
 
-const out = (data: unknown, status = 200) => NextResponse.json(data, { status, headers: { "Cache-Control": "no-store" } });
+const out = (data: unknown, status = 200) => NextResponse.json(data, { status, headers: { "Cache-Control": "no-store", "Content-Type": "application/json; charset=utf-8" } });
 
 const normalize = (v: unknown) => { const d = String(v ?? "").replace(/\D/g, ""); return d.length === 11 && d.startsWith("8") ? `+7${d.slice(1)}` : d.length === 11 && d.startsWith("7") ? `+${d}` : null; };
 
@@ -102,4 +102,5 @@ export async function POST(request: Request) {
   }
 
 }
+
 

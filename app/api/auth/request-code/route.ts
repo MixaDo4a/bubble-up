@@ -14,7 +14,7 @@ const PEPPER = process.env.AUTH_CODE_PEPPER || SERVICE_KEY;
 
 function json(data: unknown, status = 200) {
 
-  return NextResponse.json(data, { status, headers: { "Cache-Control": "no-store" } });
+  return NextResponse.json(data, { status, headers: { "Cache-Control": "no-store", "Content-Type": "application/json; charset=utf-8" } });
 
 }
 
@@ -153,4 +153,5 @@ export async function POST(request: Request) {
   }
 
 }
+
 
