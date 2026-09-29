@@ -90,7 +90,7 @@ export async function POST(request: Request) {
     const sessionHeaders = { apikey: PUBLIC_KEY || "", Authorization: `Bearer ${PUBLIC_KEY || ""}`, "Content-Type": "application/json" };
     const sessionResponse = await fetch(`${URL}/auth/v1/token?grant_type=password`, { method: "POST", headers: sessionHeaders, body: JSON.stringify({ phone, password: internalPassword }) });
 
-    if (!sessionResponse.ok) return out({ error: "Не удалось создать сессию" }, 502);
+    if (!sessionResponse.ok) { console.error("auth-session", sessionResponse.status, await sessionResponse.text().catch(() => "")); return out({ error: "Не удалось создать сессию" }, 502); }
 
     return out({ ok: true, userId: row.user_id, session: await sessionResponse.json() });
 
@@ -103,6 +103,7 @@ export async function POST(request: Request) {
   }
 
 }
+
 
 
 
