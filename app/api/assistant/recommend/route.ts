@@ -118,7 +118,9 @@ export async function POST(request: Request) {
       body: JSON.stringify({
         model: MODEL,
         store: false,
-        max_output_tokens: 450,
+        // Nano may spend a meaningful part of a small output budget on reasoning
+        // before it emits the schema-constrained recommendation.
+        max_output_tokens: 1000,
         input: [
           { role: "system", content: system },
           { role: "user", content: `Настроение и пожелание гостя:\n${requestText}\n\nАктуальный каталог:\n${JSON.stringify(products)}` },
@@ -154,11 +156,18 @@ export async function POST(request: Request) {
     }
 
     const payload = await response.json() as {
+      status?: string;
+      incomplete_details?: { reason?: string };
       output_text?: string;
       output?: Array<{ content?: Array<{ type?: string; text?: string }> }>;
     };
     const outputText = payload.output_text || payload.output?.flatMap(item => item.content || [])
       .find(item => item.type === "output_text")?.text || "";
+    if (!outputText.trim()) {
+      console.error("OpenAI recommendation returned no text:", payload.status || "unknown", payload.incomplete_details?.reason || "no details");
+      return jsonError("Не удалось сформировать рекомендацию. Попробуйте ещё раз.", 502);
+    }
+
     const generated = JSON.parse(outputText) as {
       name: string;
       response: string;
