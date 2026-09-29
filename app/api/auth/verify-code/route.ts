@@ -80,7 +80,7 @@ export async function POST(request: Request) {
 
     const authUser = (await userResponse.json()) as { email?: string | null };
 
-    const email = authUser.email || `${phone.replace(/\D/g, "")}-${row.user_id.slice(0, 8)}@krmbl.app`;
+    const email = `${phone.replace(/\D/g, "")}-${row.user_id.slice(0, 8)}@krmbl.app`;
 
     const updatePayload = JSON.stringify({ email, password: internalPassword, email_confirm: true });
     let update = await fetch(`${URL}/auth/v1/admin/users/${row.user_id}/`, { method: "PUT", headers: adminHeaders, body: updatePayload });
@@ -103,6 +103,7 @@ export async function POST(request: Request) {
   }
 
 }
+
 
 
 
