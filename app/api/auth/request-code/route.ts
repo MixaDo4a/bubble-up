@@ -104,7 +104,8 @@ export async function POST(request: Request) {
 
     const botToken = process.env.TELEGRAM_BOT_TOKEN;
 
-    if (!botToken || !telegram?.provider_subject) return json({ error: "Telegram ещё не привязан к профилю" }, 409);
+    if (!telegram?.provider_subject) return json({ error: "Telegram ещё не привязан к профилю" }, 409);
+    if (!botToken) return json({ error: "Telegram привязан, но отправка кода не настроена на этом сервере" }, 503);
 
     const code = String(randomInt(100000, 1000000));
 
@@ -125,12 +126,6 @@ export async function POST(request: Request) {
 
 
     if (channel === "telegram") {
-
-      const botToken = process.env.TELEGRAM_BOT_TOKEN;
-
-      const telegram = profile.identity_links?.find((x: { provider: string }) => x.provider === "telegram");
-
-      if (!botToken || !telegram?.provider_subject) return json({ error: "Telegram ещё не привязан к профилю" }, 409);
 
       const sent = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ chat_id: telegram.provider_subject, text: `Код входа KRMBl Cookies: ${code}\nДействует 5 минут. Никому его не сообщайте.` }) });
 

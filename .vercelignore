@@ -1,0 +1,7 @@
+.vercel
+.env*
+/.remote-runtime.js
+/.script*.js
+/.tmp-catalog-script.txt
+/video_contact.jpg
+/supabase/.temp/
