@@ -86,7 +86,7 @@ export async function POST(request: Request) {
 
     }
 
-    if (!profile) return json({ error: "Пользователь не зарегистрирован. Завершите регистрацию через Telegram", registrationUrl: `https://t.me/${process.env.TELEGRAM_BOT_USERNAME || "krmbl_cookies"}?start=register` }, 404);
+    if (!profile) return json({ error: "Пользователь не зарегистрирован. Завершите регистрацию через Telegram", registrationUrl: `https://t.me/${process.env.TELEGRAM_BOT_USERNAME || "krmbl_cookies_vdk_bot"}?start=register` }, 404);
 
     if (!profile.is_active) return json({ error: "Профиль заблокирован" }, 403);
 
@@ -153,5 +153,6 @@ export async function POST(request: Request) {
   }
 
 }
+
 
 
