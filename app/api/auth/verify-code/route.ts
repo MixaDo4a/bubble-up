@@ -82,13 +82,13 @@ export async function POST(request: Request) {
 
     const email = `${phone.replace(/\D/g, "")}-${row.user_id.slice(0, 8)}@krmbl.app`;
 
-    const updatePayload = JSON.stringify({ email, password: internalPassword, email_confirm: true });
+    const updatePayload = JSON.stringify({ phone, password: internalPassword, phone_confirm: true });
     let update = await fetch(`${URL}/auth/v1/admin/users/${row.user_id}/`, { method: "PUT", headers: adminHeaders, body: updatePayload });
     if (!update.ok) update = await fetch(`${URL}/auth/v1/admin/users/${row.user_id}/`, { method: "PATCH", headers: adminHeaders, body: updatePayload });
-    if (!update.ok) update = await fetch(`${URL}/auth/v1/admin/users`, { method: "POST", headers: adminHeaders, body: JSON.stringify({id: row.user_id, email, password: internalPassword, email_confirm: true}) });
+    if (!update.ok) update = await fetch(`${URL}/auth/v1/admin/users`, { method: "POST", headers: adminHeaders, body: JSON.stringify({id: row.user_id, phone, password: internalPassword, phone_confirm: true}) });
     if (!update.ok) { console.error("auth-user-update", update.status, await update.text().catch(() => "")); return out({ error: "Не удалось обновить данные входа" }, 502); }
     const sessionHeaders = { apikey: PUBLIC_KEY || "", Authorization: `Bearer ${PUBLIC_KEY || ""}`, "Content-Type": "application/json" };
-    const sessionResponse = await fetch(`${URL}/auth/v1/token?grant_type=password`, { method: "POST", headers: sessionHeaders, body: JSON.stringify({ email, password: internalPassword }) });
+    const sessionResponse = await fetch(`${URL}/auth/v1/token?grant_type=password`, { method: "POST", headers: sessionHeaders, body: JSON.stringify({ phone, password: internalPassword }) });
 
     if (!sessionResponse.ok) return out({ error: "Не удалось создать сессию" }, 502);
 
@@ -103,6 +103,7 @@ export async function POST(request: Request) {
   }
 
 }
+
 
 
 
