@@ -118,9 +118,9 @@ export async function POST(request: Request) {
       body: JSON.stringify({
         model: MODEL,
         store: false,
-        // Nano may spend a meaningful part of a small output budget on reasoning
-        // before it emits the schema-constrained recommendation.
-        max_output_tokens: 1000,
+        reasoning: { effort: "minimal" },
+        // Leave enough room for the schema-constrained result if the catalog is broad.
+        max_output_tokens: 1600,
         input: [
           { role: "system", content: system },
           { role: "user", content: `Настроение и пожелание гостя:\n${requestText}\n\nАктуальный каталог:\n${JSON.stringify(products)}` },
