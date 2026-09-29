@@ -84,7 +84,7 @@ export async function POST(request: Request) {
 
     const updatePayload = JSON.stringify({ email, password: internalPassword, email_confirm: true });
     let update = await fetch(`${URL}/auth/v1/admin/users/${row.user_id}/`, { method: "PUT", headers: adminHeaders, body: updatePayload });
-    if (!update.ok) update = await fetch(`${URL}/auth/v1/admin/users/${row.user_id}/`, { method: "PATCH", headers: adminHeaders, body: updatePayload });
+    if (!update.ok) update = await fetch(`${URL}/auth/v1/admin/users/${row.user_id}/`, { method: "PATCH", headers: adminHeaders, body: updatePayload });\n    if (!update.ok) update = await fetch(`${URL}/auth/v1/admin/users`, { method: "POST", headers: adminHeaders, body: JSON.stringify({id: row.user_id, email, password: internalPassword, email_confirm: true}) });
     if (!update.ok) { console.error("auth-user-update", update.status, await update.text().catch(() => "")); return out({ error: "Не удалось обновить данные входа" }, 502); }
     const sessionHeaders = { apikey: PUBLIC_KEY || "", Authorization: `Bearer ${PUBLIC_KEY || ""}`, "Content-Type": "application/json" };
     const sessionResponse = await fetch(`${URL}/auth/v1/token?grant_type=password`, { method: "POST", headers: sessionHeaders, body: JSON.stringify({ email, password: internalPassword }) });
@@ -102,6 +102,7 @@ export async function POST(request: Request) {
   }
 
 }
+
 
 
 
