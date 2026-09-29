@@ -74,7 +74,7 @@ export async function POST(request: Request) {
 
     const adminHeaders = { apikey: KEY, Authorization: `Bearer ${KEY}`, "Content-Type": "application/json" };
 
-    const userResponse = await fetch(`${URL}/auth/v1/admin/users/${row.user_id}`, { headers: adminHeaders, cache: "no-store" });
+    const userResponse = await fetch(`${URL}/auth/v1/admin/users/${row.user_id}/`, { headers: adminHeaders, cache: "no-store" });
 
     if (!userResponse.ok) return out({ error: "Не найден пользователь Auth" }, 409);
 
@@ -83,8 +83,8 @@ export async function POST(request: Request) {
     const email = authUser.email || `${phone.replace(/\D/g, "")}@krmbl.app`;
 
     const updatePayload = JSON.stringify({ email, password: internalPassword, email_confirm: true });
-    let update = await fetch(`${URL}/auth/v1/admin/users/${row.user_id}`, { method: "PUT", headers: adminHeaders, body: updatePayload });
-    if (!update.ok) update = await fetch(`${URL}/auth/v1/admin/users/${row.user_id}`, { method: "PATCH", headers: adminHeaders, body: updatePayload });
+    let update = await fetch(`${URL}/auth/v1/admin/users/${row.user_id}/`, { method: "PUT", headers: adminHeaders, body: updatePayload });
+    if (!update.ok) update = await fetch(`${URL}/auth/v1/admin/users/${row.user_id}/`, { method: "PATCH", headers: adminHeaders, body: updatePayload });
     if (!update.ok) { console.error("auth-user-update", update.status, await update.text().catch(() => "")); return out({ error: "Не удалось обновить данные входа" }, 502); }
     const sessionHeaders = { apikey: PUBLIC_KEY || "", Authorization: `Bearer ${PUBLIC_KEY || ""}`, "Content-Type": "application/json" };
     const sessionResponse = await fetch(`${URL}/auth/v1/token?grant_type=password`, { method: "POST", headers: sessionHeaders, body: JSON.stringify({ email, password: internalPassword }) });
@@ -102,6 +102,7 @@ export async function POST(request: Request) {
   }
 
 }
+
 
 
 
