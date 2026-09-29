@@ -70,7 +70,7 @@ export async function POST(request: Request) {
 
     await db(`profiles?id=eq.${row.user_id}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ last_login_at: new Date().toISOString() }) });
 
-    const internalPassword = `${crypto.randomUUID()}-${crypto.randomUUID()}`;
+    const internalPassword = `${crypto.randomUUID()}-${crypto.randomUUID().slice(0, 12)}`;
 
     const adminHeaders = { apikey: KEY, Authorization: `Bearer ${KEY}`, "Content-Type": "application/json" };
 
@@ -103,6 +103,7 @@ export async function POST(request: Request) {
   }
 
 }
+
 
 
 
