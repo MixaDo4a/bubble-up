@@ -63,12 +63,11 @@
     body .agreed-assistant .assistant-result-copy{color:rgba(255,255,255,.96)!important}
     .agreed-assistant .assistant-result-link{display:inline-flex;align-items:center;justify-content:center;margin-top:12px;padding:11px 15px;border-radius:999px;background:rgba(16,39,66,.5);color:#fff;text-decoration:none;font-weight:600}
     .agreed-assistant .assistant-input button:disabled{opacity:.55;cursor:wait}
-    body .agreed-panel.agreed-assistant.assistant-has-answer .assistant-input{box-sizing:border-box!important;align-self:center!important;width:min(100%,420px)!important;min-height:48px!important;height:48px!important;flex:0 0 48px!important;margin:auto auto 0!important;padding:3px 6px 3px 14px!important;border-radius:24px!important}
+    body .agreed-panel.agreed-assistant.assistant-has-answer .assistant-input{box-sizing:border-box!important;align-self:center!important;width:min(100%,420px)!important;min-height:48px!important;height:48px!important;flex:0 0 48px!important;margin:0 auto 0!important;padding:3px 6px 3px 14px!important;border-radius:24px!important}
     body .agreed-panel.agreed-assistant.assistant-has-answer .assistant-input input{font-size:15px!important}
     body .agreed-panel.agreed-assistant.assistant-has-answer .assistant-input button{width:38px!important;height:38px!important;flex:0 0 38px!important;font-size:22px!important}
-    body .agreed-panel.agreed-assistant.assistant-has-answer .assistant-machine{flex:0 0 16%!important;height:16%!important;min-height:105px!important;margin:10px 0 0!important}
     body .agreed-panel.agreed-assistant.assistant-has-answer .assistant-prompt{flex:0 0 auto!important;height:auto!important;min-height:0!important;margin:0!important;padding:8px 0!important;font-size:21px!important}
-    body .agreed-panel.agreed-assistant.assistant-has-answer .assistant-result{flex:0 0 auto!important;min-height:0!important;max-height:25vh!important}
+    body .agreed-panel.agreed-assistant.assistant-has-answer .assistant-result{flex:0 0 auto!important;min-height:0!important;max-height:25vh!important;margin:auto 0 8px!important}
   `;
   document.head.appendChild(style);
 
@@ -92,7 +91,6 @@
     panel.dataset.recommendationWired = "true";
 
     let busy = false;
-    let animationTimer = 0;
     const showStatus = (title, copy, recommendation = null) => {
       status.querySelector("h2").textContent = title;
       status.querySelector(".assistant-result-copy").textContent = copy;
@@ -116,16 +114,14 @@
       quick.hidden = false;
       panel.classList.remove("assistant-has-answer");
     };
-    const animateOnce = () => new Promise(resolve => {
-      if (!machine || !image) return resolve();
-      window.clearTimeout(animationTimer);
+    const animateWhileThinking = () => {
+      if (!machine || !image) return () => {};
       machine.classList.add("is-playing");
       image.src = `/shaker_pouring.gif?run=${Date.now()}`;
-      animationTimer = window.setTimeout(() => {
+      return () => {
         machine.classList.remove("is-playing");
-        resolve();
-      }, 3800);
-    });
+      };
+    };
 
     document.addEventListener("click", event => {
       const button = event.target instanceof Element ? event.target.closest(".agreed-assistant .quick button:first-child") : null;
@@ -155,24 +151,24 @@
       showStatus("Смешиваем для тебя…", "Подбираю вкус по твоему настроению.");
       submit.disabled = true;
       form.setAttribute("aria-busy", "true");
-      const animation = animateOnce();
+      const stopAnimation = animateWhileThinking();
       try {
-        const responsePromise = fetch("/api/assistant/recommend", {
+        const response = await fetch("/api/assistant/recommend", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ request }),
-        }).then(async response => {
-          const data = await response.json().catch(() => ({}));
-          if (!response.ok) throw new Error(data.error || "Помощник пока не смог ответить. Попробуй ещё раз.");
-          return data;
         });
-        const [data] = await Promise.all([responsePromise, animation]);
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || "Помощник пока не смог ответить. Попробуй ещё раз.");
+        stopAnimation();
         panel.classList.add("assistant-has-answer");
         showStatus("Твоя вкусняшка готова!", data.response, data);
       } catch (error) {
+        stopAnimation();
         panel.classList.add("assistant-has-answer");
         showStatus("Давай попробуем ещё раз", error instanceof Error ? error.message : "Не получилось подобрать вкус.");
       } finally {
+        stopAnimation();
         busy = false;
         submit.disabled = false;
         form.removeAttribute("aria-busy");
