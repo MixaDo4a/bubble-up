@@ -1,6 +1,13 @@
 /* Reference-style add-on picker. Catalog values and media remain constructor-owned. */
 window.__referenceAddonPickerEnabled = true;
 (() => {
+  let settleCartState;
+  window.__krmblCartReady = new Promise(resolve => { settleCartState = resolve; });
+  const finishCartState = state => {
+    if (!settleCartState) return;
+    settleCartState(state);
+    settleCartState = null;
+  };
   const safeText = value => String(value ?? '').replace(/[<>]/g, '');
   const mediaOf = item => item?.image_url || item?.imageUrl || item?.icon_url || item?.iconUrl || item?.photo_url || item?.image || item?.icon || '';
   const soldOut = item => item?.sold_out === true || item?.is_sold_out === true || item?.is_available === false || item?.available === false || item?.status === 'sold_out';
@@ -13,14 +20,20 @@ window.__referenceAddonPickerEnabled = true;
     const choices = document.querySelector('#choices');
     const title = document.querySelector('#popTitle');
     const priceButton = document.querySelector('.add');
-    if (!productId || !bar || !pop || !choices || !title || !priceButton) return;
+    if (!productId || !bar || !pop || !choices || !title || !priceButton) {
+      finishCartState(null);
+      return;
+    }
 
     try {
       const response = await fetch('/api/catalog?addons=' + Date.now(), { cache: 'no-store' });
       if (!response.ok) throw new Error('Catalog request failed: ' + response.status);
       const catalog = await response.json();
       const product = (catalog.campaigns || []).flatMap(c => c.menus || []).flatMap(m => m.products || []).find(p => p.id === productId);
-      if (!product) return;
+      if (!product) {
+        finishCartState(null);
+        return;
+      }
       const groups = product.addon_groups || [];
       const selected = {};
       const presetIds = new Set((new URLSearchParams(location.search).get('addons') || '').split(',').filter(Boolean));
@@ -238,8 +251,10 @@ window.__referenceAddonPickerEnabled = true;
       window.addEventListener('resize', () => { if (currentGroup && pop.style.display === 'block') renderChoices(currentGroup); });
       refreshPrice();
       updateCart();
+      finishCartState(window.__krmblCartState);
     } catch (error) {
       console.error('Reference add-on picker', error);
+      finishCartState(null);
     }
   }
 
