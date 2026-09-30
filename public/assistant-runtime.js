@@ -61,9 +61,7 @@
     .agreed-assistant .assistant-result h2{margin:0 0 8px;font-size:18px;font-weight:600;line-height:1.25}
     .agreed-assistant .assistant-result-copy{margin:0;font-size:15px;line-height:1.4;white-space:pre-wrap}
     body .agreed-assistant .assistant-result-copy{color:rgba(255,255,255,.96)!important}
-    .agreed-assistant .assistant-result-items{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
-    .agreed-assistant .assistant-result-item{padding:7px 10px;border-radius:14px;background:rgba(16,39,66,.45);font-size:12px;line-height:1.25}
-    .agreed-assistant .assistant-result-item small{display:block;margin-top:3px;opacity:.72}
+    .agreed-assistant .assistant-result-link{display:inline-flex;align-items:center;justify-content:center;margin-top:12px;padding:11px 15px;border-radius:999px;background:rgba(16,39,66,.5);color:#fff;text-decoration:none;font-weight:600}
     .agreed-assistant .assistant-input button:disabled{opacity:.55;cursor:wait}
     body .agreed-panel.agreed-assistant.assistant-has-answer .assistant-machine{flex:0 0 16%!important;height:16%!important;min-height:105px!important;margin:10px 0 0!important}
     body .agreed-panel.agreed-assistant.assistant-has-answer .assistant-prompt{flex:0 0 auto!important;height:auto!important;min-height:0!important;margin:0!important;padding:8px 0!important;font-size:21px!important}
@@ -85,27 +83,29 @@
     status.className = "assistant-result";
     status.hidden = true;
     status.setAttribute("aria-live", "polite");
-    status.innerHTML = '<h2></h2><p class="assistant-result-copy"></p><div class="assistant-result-items"></div>';
+    status.innerHTML = '<h2></h2><p class="assistant-result-copy"></p><a class="assistant-result-link" hidden></a>';
     form?.before(status);
     if (!form || !input || !submit || !quick) return;
     panel.dataset.recommendationWired = "true";
 
     let busy = false;
     let animationTimer = 0;
-    const showStatus = (title, copy, items = []) => {
+    const showStatus = (title, copy, recommendation = null) => {
       status.querySelector("h2").textContent = title;
       status.querySelector(".assistant-result-copy").textContent = copy;
-      const list = status.querySelector(".assistant-result-items");
-      list.replaceChildren();
-      for (const item of items) {
-        const chip = document.createElement("div");
-        chip.className = "assistant-result-item";
-        chip.append(document.createTextNode(item.name));
-        const detail = document.createElement("small");
-        detail.textContent = `${item.kind} · ${Number(item.price || 0).toLocaleString("ru-RU")} ₽`;
-        chip.append(detail);
-        list.append(chip);
-      }
+      const link = status.querySelector(".assistant-result-link");
+      const productId = recommendation?.productId;
+      const addonIds = Array.isArray(recommendation?.addonIds) ? recommendation.addonIds : [];
+      link.hidden = !productId;
+      link.textContent = productId ? "Открыть готовую вкусняшку и оплатить →" : "";
+      link.href = productId ? `/product-options.html?product=${encodeURIComponent(productId)}&addons=${encodeURIComponent(addonIds.join(","))}` : "#";
+      link.onclick = event => {
+        if (!productId) return;
+        event.preventDefault();
+        const openEvent = new CustomEvent("krmbl-open-product", { detail: { productId, addonIds }, cancelable: true });
+        document.dispatchEvent(openEvent);
+        if (!openEvent.defaultPrevented) window.location.assign(link.href);
+      };
       status.hidden = false;
     };
     const resetResult = () => {
@@ -165,7 +165,7 @@
         });
         const [data] = await Promise.all([responsePromise, animation]);
         panel.classList.add("assistant-has-answer");
-        showStatus(`Твои вкусняшки на твоё состояние · ${data.name}`, data.response, data.items || []);
+        showStatus("Твоя вкусняшка готова!", data.response, data);
       } catch (error) {
         panel.classList.add("assistant-has-answer");
         showStatus("Давай попробуем ещё раз", error instanceof Error ? error.message : "Не получилось подобрать вкус.");
