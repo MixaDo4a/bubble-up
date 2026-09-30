@@ -82,7 +82,7 @@ window.addEventListener('load',()=>{const tabs=document.querySelector('.tabs'),b
 window.addEventListener('load',()=>{const box=document.querySelector('.builderProducts'),p=box?.querySelector('.productMenuPills');if(!box||!p)return;box.insertBefore(p,box.firstChild);});
 </script>
 <style>
-.main[data-mode="3"]>.card{display:none!important}
+.main[data-mode="3"]>.card{display:none!important}.main[data-mode="3"]>.productStandalone{display:block!important}
 .main[data-mode="3"] .builderProducts .productMenuPills{display:flex!important}
  .main .card:has(>h2:nth-child(1)):has(>h2) { } .main .card:has(>h2:first-child) { } </style>
 <script>
