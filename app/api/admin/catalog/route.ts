@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { cleanupStaleOrphanMedia, deleteStorageObjectIfUnreferenced } from "@/lib/catalog/media-cleanup";
 
 export const runtime = "nodejs";
 
@@ -15,6 +16,10 @@ function authorized(request: Request) {
 }
 
 const allowed = new Set(["campaigns", "menus", "products", "addon_groups", "addons", "product_addon_groups", "product_addons", "coffee_shops"]);
+const mediaFields: Record<string, string[]> = {
+  campaigns: ["image_url", "video_url"], menus: ["image_url", "video_url"],
+  products: ["image_url", "video_url"], addons: ["image_url"],
+};
 
 export async function GET(request: Request) {
   const c = cfg();
@@ -43,8 +48,27 @@ export async function PATCH(request: Request) {
   if (!authorized(request)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const body = await request.json() as { entity?: string; id?: string; data?: Record<string, unknown> };
   if (!body.entity || !allowed.has(body.entity) || !body.id || !body.data) return NextResponse.json({ error: "entity, id and data are required" }, { status: 400 });
+  const changedMediaFields = (mediaFields[body.entity] || []).filter((field) => Object.hasOwn(body.data!, field));
+  let oldMedia: Record<string, unknown> = {};
+  if (changedMediaFields.length) {
+    const query = new URLSearchParams({ select: changedMediaFields.join(",") });
+    const oldResponse = await fetch(`${c.url}/rest/v1/${body.entity}?id=eq.${encodeURIComponent(body.id)}&${query}`, {
+      headers: { apikey: c.key, Authorization: `Bearer ${c.key}` }, cache: "no-store",
+    });
+    if (!oldResponse.ok) return NextResponse.json({ error: `Could not read current media (${oldResponse.status})` }, { status: 502 });
+    const rows = await oldResponse.json();
+    if (Array.isArray(rows)) oldMedia = rows[0] || {};
+  }
   const response = await fetch(`${c.url}/rest/v1/${body.entity}?id=eq.${encodeURIComponent(body.id)}`, { method: "PATCH", headers: { apikey: c.key, Authorization: `Bearer ${c.key}`, "Content-Type": "application/json", Prefer: "return=representation" }, body: JSON.stringify(body.data) });
-  return NextResponse.json(await response.json(), { status: response.status });
+  const payload = await response.json().catch(() => null);
+  if (response.ok && changedMediaFields.length && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    const cleanupConfig = { url: c.url, key: process.env.SUPABASE_SERVICE_ROLE_KEY, bucket: process.env.SUPABASE_STORAGE_BUCKET || "drinkit-media" };
+    await Promise.all(changedMediaFields.map((field) => oldMedia[field] !== body.data![field]
+      ? deleteStorageObjectIfUnreferenced(cleanupConfig, oldMedia[field])
+      : Promise.resolve("referenced" as const)));
+    await cleanupStaleOrphanMedia(cleanupConfig);
+  }
+  return NextResponse.json(payload, { status: response.status });
 }
 
 export async function DELETE(request: Request) {
@@ -55,6 +79,9 @@ export async function DELETE(request: Request) {
   if (!body.entity || !allowed.has(body.entity) || (!body.id && !body.where)) return NextResponse.json({ error: "entity and id or where are required" }, { status: 400 });
   const filter = body.id ? `id=eq.${encodeURIComponent(body.id)}` : Object.entries(body.where || {}).map(([k,v]) => `${encodeURIComponent(k)}=eq.${encodeURIComponent(v)}`).join("&");
   const response = await fetch(`${c.url}/rest/v1/${body.entity}?${filter}`, { method: "DELETE", headers: { apikey: c.key, Authorization: `Bearer ${c.key}`, Prefer: "return=minimal" } });
+  if (response.ok && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    await cleanupStaleOrphanMedia({ url: c.url, key: process.env.SUPABASE_SERVICE_ROLE_KEY, bucket: process.env.SUPABASE_STORAGE_BUCKET || "drinkit-media" });
+  }
   return new NextResponse(null, { status: response.status });
 }
 
